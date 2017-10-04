@@ -68,8 +68,36 @@ class GAWSISClient(object):
         if username is not None and password is not None:
             raise NotImplementedError('Authentication not yet supported')
 
-    def get_station_report(self, gawid, responseformat='JSON', pretty=False):
-        """get station information by gawid"""
+    def get_all_stations(self):
+        """
+        get all stations
+
+        :returns: dictionary of all GAW stations
+        """
+
+        LOGGER.info('Searching for all GAW stations')
+        try:
+            request = os.path.join(self.url,
+                                   'stations/approvedStations/gawIds')
+
+            LOGGER.debug('Fetching all GAWSIS identifiers')
+            response = requests.get(request, headers=self.headers).json()
+
+            return response
+
+        except StopIteration:
+            msg = 'GAW ID not found'
+            LOGGER.exception(msg)
+            raise RequestError(msg)
+
+    def get_station_report(self, gawid):
+        """
+        get station information by gawid
+
+        :param gawid: GAW identifier (WIGOS or legacy format)
+
+        :returns: dictionary of station report
+        """
 
         gawid = gawid.upper()
 
@@ -90,14 +118,7 @@ class GAWSISClient(object):
             LOGGER.debug('Fetching station report')
             response = requests.get(request, headers=self.headers).json()
 
-            print(responseformat)
-            if responseformat == 'JSON':
-                if pretty:
-                    return json.dumps(response, indent=4)
-                else:
-                    return response
-            else:
-                raise NotImplementedError()
+            return response
 
         except StopIteration:
             msg = 'GAW ID not found'
@@ -113,9 +134,7 @@ class RequestError(Exception):
 @click.command()
 @click.pass_context
 @click.option('--gaw-id', '-g', 'gaw_id', help='GAW ID')
-@click.option('--format', '-f', 'format_', default='JSON',
-              help='Output format (XML or JSON [default])')
-def station(ctx, gaw_id, format_):
+def station(ctx, gaw_id):
     """get station report"""
 
     if gaw_id is None:
@@ -124,5 +143,18 @@ def station(ctx, gaw_id, format_):
 
     g = GAWSISClient()
 
-    click.echo_via_pager(g.get_station_report(gaw_id, responseformat=format_,
-                         pretty=True))
+    response = json.dumps(g.get_station_report(gaw_id), indent=4)
+
+    click.echo_via_pager(response)
+
+
+@click.command()
+@click.pass_context
+def all_stations(ctx):
+    """get all stations"""
+
+    g = GAWSISClient()
+
+    response = json.dumps(g.get_all_stations(), indent=4)
+
+    click.echo_via_pager(response)

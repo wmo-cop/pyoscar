@@ -29,7 +29,7 @@
 
 import click
 
-from pyoscar.gawsis import station
+from pyoscar.gawsis import station, all_stations
 
 __version__ = '0.1.dev0'
 
@@ -41,3 +41,4 @@ def cli():
 
 
 cli.add_command(station)
+cli.add_command(all_stations)

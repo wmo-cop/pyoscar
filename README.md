@@ -7,7 +7,8 @@ Pythonic API to WMO OSCAR
 
 # Overview
 
-TODO
+pyoscar provides a Pythonic API atop the WMO [OSCAR](https://oscar.wmo.int/surface/index.html)
+and [GAWSIS](https://gawsis.meteoswiss.ch/GAWSIS/index.html) HTTP APIs.
 
 # Installation
 
@@ -34,12 +35,25 @@ python setup.py build
 python setup.py install
 ```
 
-## Running pyoscar
+## Running pyoscar via the Command Line
 
 ```bash
-# run GAWSIS query via pygawsis
+# pygawsis:
+# - get all stations
+pygawsis all_stations
+# - get station report by GAW ID
 pygawsis station --gaw-id LEO
+```
 
+## Using the pyoscar API
+
+```
+from pyoscar.gawsis import GAWSISClient
+
+client = GAWSISClient()
+
+all_stations = client.get_all_stations()
+stn_leo = client.get_station_report('LEO')
 ```
 
 ## Development
