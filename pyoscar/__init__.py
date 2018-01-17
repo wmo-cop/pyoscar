@@ -27,18 +27,4 @@
 #
 # =================================================================
 
-import click
-
-from pyoscar.gawsis import station, all_stations
-
 __version__ = '0.1.dev0'
-
-
-@click.group()
-@click.version_option(version=__version__)
-def cli():
-    pass
-
-
-cli.add_command(station)
-cli.add_command(all_stations)
