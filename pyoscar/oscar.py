@@ -66,7 +66,7 @@ class OSCARClient(object):
         """authentication token"""
 
         self.headers = {
-            'User-Agent': 'pyoscar: https://github.com/OGCMetOceanDWG/pyoscar'
+            'User-Agent': 'pyoscar: https://github.com/WMO-ET-WDC/pyoscar'
         }
         """HTTP headers dictionary applied with requests"""
 

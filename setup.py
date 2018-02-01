@@ -98,7 +98,7 @@ setup(
     author_email='tom.kralidis@canada.ca',
     maintainer='Meteorological Service of Canada',
     maintainer_email='tom.kralidis@canada.ca',
-    url='https://github.com/OGCMetOceanDWG/pyoscar',
+    url='https://github.com/WMO-ET-WDC/pyoscar',
     install_requires=read('requirements.txt').splitlines(),
     packages=find_packages(),
     include_package_data=True,
