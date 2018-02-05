@@ -1,0 +1,223 @@
+{
+  "id": 10100,
+  "name": "SYDNEY CS, NS",
+  "typeName": "Land (fixed)",
+  "typeId": 1,
+  "wmoRaName": "IV - North America, Central America and the Caribbean",
+  "wmoRaId": 4,
+  "lastModifiedOn": "2016-04-28",
+  "wmoIndex": "0-20000-0-71758",
+  "descriptions": [
+    {
+      "id": 8155,
+      "description": "The station was originally registered based on WMO Pub 9 Vol A information containing these observation remarks: AUT;CLIMAT(C);RBCN;RBSN(S) (see code table A for explanations). These remarks imply the following additional observations that could not be registered automatically: none.",
+      "validSince": "2016-04-28"
+    }
+  ],
+  "organizations": [
+    {
+      "id": 7379,
+      "organizationName": "EC",
+      "organizationId": 74,
+      "validSince": "2016-04-28"
+    }
+  ],
+  "territories": [
+    {
+      "id": 8469,
+      "territoryName": "Canada",
+      "territoryId": 36,
+      "validSince": "2016-04-28"
+    }
+  ],
+  "locations": [
+    {
+      "id": 8466,
+      "latitude": 46.1633333333,
+      "longitude": -60.0416666667,
+      "elevation": 62.5,
+      "validSince": "2016-04-28"
+    }
+  ],
+  "imageFolderId": "8d731346-fee1-4583-8da2-548655114a82",
+  "documentFolderId": "18761154-759e-4aa4-ba0d-fe84fb3317cc",
+  "contacts": [
+    {
+      "contactId": 1156,
+      "contact": {
+        "userId": "416be7ac-3f15-4e4d-91d5-839e2bd29b4d",
+        "title": "Mr",
+        "name": "Jeffrey",
+        "surname": "Karn",
+        "email": "jeffrey.karn@canada.ca",
+        "city": "Gatineau",
+        "countryId": 36,
+        "countryName": "Canada",
+        "phone": "+1 416 739-4923",
+        "status": 1,
+        "lastModifiedOn": 1462831200000,
+        "lastModifiedBy": "1ba9eecc-8145-4970-b27e-f5df267201b5",
+        "lastModifiedByFirstName": "Dolgorsuren (Ogui)",
+        "lastModifiedBySurname": "Khuukhenbaatar",
+        "administrator": false,
+        "id": 1156,
+        "organisationId": 74,
+        "organisationName": "Environment Canada",
+        "organizationUrl": "http:\/\/www.ec.gc.ca\/meteo-weather",
+        "wmoRaId": 4,
+        "wmoRaName": "North America, Central America and the Caribbean",
+        "functionNameValues": [
+          "National focal point in Canada"
+        ],
+        "stationIds": [
+          10047,
+          10236,
+          14086,
+          32440,
+          32473,
+          32517,
+          32540
+        ],
+        "stationNames": [
+          "SLAVE LAKE RCS, AB",
+          "EUREKA A, NU",
+          "BRATT'S LAKE UA, SASK",
+          "Eureka Climate",
+          "Prince Albert Glass Field",
+          "Port Aux Basques",
+          "SABLE ISLAND"
+        ],
+        "stations": [
+          {
+            "id": 10047,
+            "name": "SLAVE LAKE RCS, AB"
+          },
+          {
+            "id": 10236,
+            "name": "EUREKA A, NU"
+          },
+          {
+            "id": 14086,
+            "name": "BRATT'S LAKE UA, SASK"
+          },
+          {
+            "id": 32440,
+            "name": "Eureka Climate"
+          },
+          {
+            "id": 32473,
+            "name": "Prince Albert Glass Field"
+          },
+          {
+            "id": 32517,
+            "name": "Port Aux Basques"
+          },
+          {
+            "id": 32540,
+            "name": "SABLE ISLAND"
+          }
+        ],
+        "ie": false,
+        "addedCountryList": [
+          {
+            "id": 36,
+            "name": "Canada"
+          }
+        ]
+      },
+      "measurementLeader": false
+    },
+    {
+      "contactId": 496,
+      "contact": {
+        "userId": "7bd75cd0-456b-438f-811a-8f7892047f80",
+        "name": "Marjorie",
+        "surname": "Shepherd",
+        "email": "marjorie.shepherd@ec.gc.ca",
+        "address": "Climate Research Division, Environment Canada\n4905 Dufferin Street",
+        "postalCode": "M3H 5T4",
+        "city": "Toronto",
+        "countryId": 36,
+        "countryName": "Canada",
+        "phone": "+416 739 42 30",
+        "status": -1,
+        "lastModifiedOn": 1501797600000,
+        "lastModifiedBy": "d2430a26-1e89-4d42-8b05-8933a9ad0989",
+        "lastModifiedByFirstName": "L\u00e9a",
+        "lastModifiedBySurname": "Freydier",
+        "administrator": false,
+        "id": 496,
+        "organisationId": 74,
+        "organisationName": "Environment Canada",
+        "organizationUrl": "http:\/\/www.ec.gc.ca\/meteo-weather",
+        "wmoRaId": 4,
+        "wmoRaName": "North America, Central America and the Caribbean",
+        "fax": "+416 739 57 00",
+        "functionNameValues": [
+          "National focal point in Canada for GAW"
+        ],
+        "ie": false,
+        "addedCountryList": [
+          {
+            "id": 36,
+            "name": "Canada",
+            "definition": "GAW",
+            "addedProgramsIds": [
+              1
+            ]
+          }
+        ]
+      },
+      "measurementLeader": false
+    }
+  ],
+  "stationPrograms": [
+    {
+      "id": "17079",
+      "program": "GOS",
+      "programId": 4,
+      "memberSince": "2016-04-28",
+      "approvalStatus": "Approved",
+      "declaredStatusId": 1,
+      "declaredStatusName": "Operational",
+      "calculatedStatusId": 1,
+      "calculatedStatusName": "Operational",
+      "programUrl": "https:\/\/www.wmo.int\/pages\/prog\/www\/OSY\/GOS.html"
+    },
+    {
+      "id": "17080",
+      "program": "CLIMAT(C)",
+      "programId": 52,
+      "memberSince": "2016-04-28",
+      "approvalStatus": "Approved",
+      "declaredStatusId": 1,
+      "declaredStatusName": "Operational",
+      "calculatedStatusId": 1,
+      "calculatedStatusName": "Operational"
+    },
+    {
+      "id": "17081",
+      "program": "RBCN",
+      "programId": 56,
+      "memberSince": "2016-04-28",
+      "approvalStatus": "Approved",
+      "declaredStatusId": 1,
+      "declaredStatusName": "Operational",
+      "calculatedStatusId": 1,
+      "calculatedStatusName": "Operational"
+    },
+    {
+      "id": "17082",
+      "program": "RBSN(S)",
+      "programId": 57,
+      "memberSince": "2016-04-28",
+      "approvalStatus": "Approved",
+      "declaredStatusId": 1,
+      "declaredStatusName": "Operational",
+      "calculatedStatusId": 1,
+      "calculatedStatusName": "Operational"
+    }
+  ],
+  "approvalStatus": "Approved",
+  "approvalStatusId": 1
+}

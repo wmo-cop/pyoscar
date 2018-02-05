@@ -50,6 +50,25 @@ class PyTest(Command):
         raise SystemExit(errno)
 
 
+class PyCoverage(Command):
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        import subprocess
+
+        errno = subprocess.call(['coverage', 'run', '--source=pyoscar',
+                                 '-m', 'unittest',
+                                 'pyoscar.tests.run_tests'])
+        errno = subprocess.call(['coverage', 'report', '-m'])
+        raise SystemExit(errno)
+
+
 def read(filename, encoding='utf-8'):
     """read file contents"""
     full_path = os.path.join(os.path.dirname(__file__), filename)
@@ -100,7 +119,7 @@ setup(
     maintainer_email='tom.kralidis@canada.ca',
     url='https://github.com/WMO-ET-WDC/pyoscar',
     install_requires=read('requirements.txt').splitlines(),
-    packages=find_packages(),
+    packages=find_packages(exclude=['pyoscar.tests']),
     include_package_data=True,
     entry_points={
         'console_scripts': [
@@ -118,5 +137,5 @@ setup(
         'Programming Language :: Python',
         'Topic :: Scientific/Engineering :: GIS'
     ],
-    cmdclass={'test': PyTest},
+    cmdclass={'test': PyTest, 'coverage': PyTest}
 )

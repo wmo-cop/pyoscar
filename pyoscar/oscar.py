@@ -77,54 +77,60 @@ class OSCARClient(object):
         """
         get all stations
 
-        :returns: dictionary of all stations
+        :returns: list of all stations
         """
 
         LOGGER.info('Searching for all stations')
-        request = os.path.join(self.url,
-                               'stations/approvedStations/wmoIds')
+
+        params = {
+            'q': '',
+            'page': 1,
+            'pageSize': 100000
+        }
 
         LOGGER.debug('Fetching all WMO identifiers')
+        request = os.path.join(self.url,
+                               'stations/approvedStations/wmoIds')
+        LOGGER.debug('URL: {}'.format(request))
+        response = requests.get(
+            request, headers=self.headers, params=params)
+        wmoids = response.json()
+
+        return [x['text'] for x in wmoids]
+
+    def get_station_report(self, identifier):
+        """
+        get station information by WIGOS or WMO identifier
+
+        :param identifier: identifier (WIGOS or WMO identifier)
+
+        :returns: dictionary of matching station report
+        """
+
+        if '-' in identifier:
+            identifier_ = identifier.split('-')[-1]
+        else:
+            identifier_ = identifier
+
+        LOGGER.info('Searching for identifier {}'.format(identifier_))
+        LOGGER.debug('Fetching station report')
+        request = os.path.join(self.url, 'stations/station',
+                               identifier_, 'stationReport')
+
+        LOGGER.debug('URL: {}'.format(request))
         response = requests.get(request, headers=self.headers)
-        print(response.status_code)
-        response = requests.get(request, headers=self.headers).json()
 
-        return response
+        if not response.ok:
+            LOGGER.debug('Request not ok')
+            if response.status_code == 404:
+                LOGGER.debug('Station not found')
+                return {}
+            else:
+                msg = 'API request error {}'.format(response.status_code)
+                LOGGER.warning(msg)
+                raise RequestError(msg)
 
-    def get_station_report(self, wmoid):
-        """
-        get station information by wmoid
-
-        :param wmoid: WMO identifier (WIGOS or legacy format)
-
-        :returns: dictionary of station report
-        """
-
-        wmoid = wmoid.upper()
-
-        LOGGER.info('Searching for WMO ID {}'.format(wmoid))
-        try:
-            request = os.path.join(self.url,
-                                   'stations/approvedStations/wmoIds')
-
-            LOGGER.debug('Fetching all WMO identifiers')
-            response = requests.get(request, headers=self.headers).json()
-
-            wmo_id = next(item for item in response if
-                          item['name'] == wmoid)['id']
-
-            request = os.path.join(self.url, 'stations/station',
-                                   str(wmo_id), 'stationReport')
-
-            LOGGER.debug('Fetching station report')
-            response = requests.get(request, headers=self.headers).json()
-
-            return response
-
-        except StopIteration:
-            msg = 'WMO ID not found'
-            LOGGER.exception(msg)
-            raise RequestError(msg)
+        return response.json()
 
 
 class RequestError(Exception):
@@ -140,17 +146,18 @@ def cli():
 
 @click.command()
 @click.pass_context
-@click.option('--wmo-id', '-w', 'wmo_id', help='WMO ID')
-def station(ctx, wmo_id):
+@click.option('--identifier', '-i',
+              help='identifier (WIGOS or WMO identifier')
+def station(ctx, identifier):
     """get station report"""
 
-    if wmo_id is None:
+    if identifier is None:
         raise click.ClickException(
-            'WMO identifier is a required parameter (--wmo-id or -w)')
+            'WIGOS or WMO identifier is a required parameter (-i)')
 
-    w = OSCARClient()
+    o = OSCARClient()
 
-    response = json.dumps(w.get_station_report(wmo_id), indent=4)
+    response = json.dumps(o.get_station_report(identifier), indent=4)
 
     click.echo_via_pager(response)
 
@@ -160,11 +167,12 @@ def station(ctx, wmo_id):
 def all_stations(ctx):
     """get all stations"""
 
-    g = OSCARClient()
+    o = OSCARClient()
 
-    response = json.dumps(g.get_all_stations(), indent=4)
+    response = json.dumps(o.get_all_stations(), indent=4)
 
-    click.echo_via_pager(response)
+    click.echo_via_pager('Number of stations: {}\nStations:\n{}'.format(
+        len(response), response))
 
 
 cli.add_command(station)
