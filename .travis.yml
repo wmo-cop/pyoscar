@@ -26,4 +26,4 @@ after_success:
   - coverage run --source=pyoscar -m unittest pyoscar.tests.run_tests
   - coverage report -m
   - coveralls
-- python setup.py sdist bdist_wheel --universal
+  - python setup.py sdist bdist_wheel --universal
