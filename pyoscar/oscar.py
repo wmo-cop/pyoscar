@@ -53,6 +53,9 @@ class OSCARClient(object):
         self.url = url
         """URL to OSCAR API"""
 
+        self.version = None
+        """API version"""
+
         self.username = username
         """username"""
 
@@ -73,9 +76,11 @@ class OSCARClient(object):
         if username is not None and password is not None:
             raise NotImplementedError('Authentication not yet supported')
 
-    def get_all_stations(self):
+    def get_all_stations(self, program=None):
         """
         get all stations
+
+        :param program: program/network (currently only GAW supported)
 
         :returns: list of all stations
         """
@@ -89,14 +94,61 @@ class OSCARClient(object):
         }
 
         LOGGER.debug('Fetching all WMO identifiers')
-        request = os.path.join(self.url,
-                               'stations/approvedStations/wmoIds')
-        LOGGER.debug('URL: {}'.format(request))
-        response = requests.get(
-            request, headers=self.headers, params=params)
+
+        if program.lower() == 'gaw':
+            LOGGER.debug('Fetching only GAW stations')
+            request = os.path.join(self.url,
+                                   'stations/approvedStations/gawIds')
+        else:
+            request = os.path.join(self.url,
+                                   'stations/approvedStations/wmoIds')
+
+        LOGGER.debug('Request: {}'.format(request))
+        response = requests.get(request, headers=self.headers, params=params)
+        LOGGER.debug('Response: {}'.format(response.status_code))
+
         wmoids = response.json()
 
         return [x['text'] for x in wmoids]
+
+    def get_contact(self, country, surname, organization):
+        """
+        get contact information
+
+        :param country: Country name
+        :param surname: Surname of contact
+        :param organization: Organization of contact
+
+        returns: dictionary of matching contact
+        """
+
+        ids = []
+        matches = []
+
+        LOGGER.debug('Fetching all contacts')
+
+        request = os.path.join(self.url, 'contacts')
+        LOGGER.debug('Request: {}'.format(request))
+        response = requests.get(request, headers=self.headers).json()
+        LOGGER.debug('Response: {}'.format(response.status_code))
+
+        for c in response:
+            if country is not None and country == c['countryName']:
+                ids.append(c['id'])
+            if surname is not None and surname == c['surname']:
+                ids.append(c['id'])
+            if organization is not None and organization == c['organization']:
+                ids.append(c['id'])
+
+        for id_ in ids:
+            LOGGER.debug('Fetching contact {}'.format(id_))
+            request = os.path.join(self.url, 'contacts/contact', str(id_))
+            LOGGER.debug('Request: {}'.format(request))
+            response = requests.get(request, headers=self.headers).json()
+            LOGGER.debug('Response: {}'.format(response.status_code))
+            matches.append(response)
+
+        return matches
 
     def get_station_report(self, identifier):
         """
@@ -112,25 +164,43 @@ class OSCARClient(object):
         else:
             identifier_ = identifier
 
-        LOGGER.info('Searching for identifier {}'.format(identifier_))
-        LOGGER.debug('Fetching station report')
-        request = os.path.join(self.url, 'stations/station',
-                               identifier_, 'stationReport')
+        found = False
+        found_identifier = None
 
-        LOGGER.debug('URL: {}'.format(request))
-        response = requests.get(request, headers=self.headers)
+        params = {
+            'q': '',
+            'page': 1,
+            'pageSize': 100000
+        }
 
-        if not response.ok:
-            LOGGER.debug('Request not ok')
-            if response.status_code == 404:
-                LOGGER.debug('Station not found')
-                return {}
+        request = os.path.join(self.url,
+                               'stations/approvedStations/wmoIds')
+
+        LOGGER.debug('Fetching all identifiers')
+        response = requests.get(request, headers=self.headers,
+                                params=params).json()
+
+        for item in response:
+            if '-' in identifier:
+                if item['text'] == identifier:
+                    found = True
+                    found_identifier = item['id']
             else:
-                msg = 'API request error {}'.format(response.status_code)
-                LOGGER.warning(msg)
-                raise RequestError(msg)
+                if item['text'].endswith(identifier_):
+                    found = True
+                    found_identifier = item['id']
 
-        return response.json()
+        if found:
+            LOGGER.debug('Fetching station report {}'.format(found_identifier))
+            request = os.path.join(self.url, 'stations/station',
+                                   found_identifier, 'stationReport')
+
+            response = requests.get(request, headers=self.headers)
+
+            return response.json()
+        else:
+            LOGGER.warning('Station not found')
+            return {}
 
 
 class RequestError(Exception):
@@ -146,14 +216,51 @@ def cli():
 
 @click.command()
 @click.pass_context
+@click.option('--country', '-c', help='Country')
+@click.option('--surname', '-s', help='Surname')
+@click.option('--organization', '-o', help='Organization')
+@click.option('--verbosity', '-v',
+              type=click.Choice(['ERROR', 'WARNING', 'INFO', 'DEBUG']),
+              help='Verbosity')
+def contact(ctx, country=None, surname=None, organization=None,
+            verbosity=None):
+    """get contact information"""
+
+    if all([country is None, surname is None, organization is None]):
+        raise click.ClickException(
+            'one of --country/-c, --station/-s or --contributor/-o required')
+
+    if verbosity is not None:
+        logging.basicConfig(level=getattr(logging, verbosity))
+    else:
+        logging.getLogger(__name__).addHandler(logging.NullHandler())
+
+    o = OSCARClient()
+
+    response = json.dumps(o.get_contact(country, surname, organization),
+                          indent=4)
+
+    click.echo_via_pager(response)
+
+
+@click.command()
+@click.pass_context
 @click.option('--identifier', '-i',
               help='identifier (WIGOS or WMO identifier')
-def station(ctx, identifier):
+@click.option('--verbosity', '-v',
+              type=click.Choice(['ERROR', 'WARNING', 'INFO', 'DEBUG']),
+              help='Verbosity')
+def station(ctx, identifier, verbosity=None):
     """get station report"""
 
     if identifier is None:
         raise click.ClickException(
             'WIGOS or WMO identifier is a required parameter (-i)')
+
+    if verbosity is not None:
+        logging.basicConfig(level=getattr(logging, verbosity))
+    else:
+        logging.getLogger(__name__).addHandler(logging.NullHandler())
 
     o = OSCARClient()
 
@@ -164,16 +271,26 @@ def station(ctx, identifier):
 
 @click.command()
 @click.pass_context
-def all_stations(ctx):
+@click.option('--program', '-p', help='Program (currently only GAW supported)')
+@click.option('--verbosity', '-v',
+              type=click.Choice(['ERROR', 'WARNING', 'INFO', 'DEBUG']),
+              help='Verbosity')
+def all_stations(ctx, program=None, verbosity=None):
     """get all stations"""
+
+    if verbosity is not None:
+        logging.basicConfig(level=getattr(logging, verbosity))
+    else:
+        logging.getLogger(__name__).addHandler(logging.NullHandler())
 
     o = OSCARClient()
 
-    response = json.dumps(o.get_all_stations(), indent=4)
+    response = json.dumps(o.get_all_stations(program=program), indent=4)
 
     click.echo_via_pager('Number of stations: {}\nStations:\n{}'.format(
         len(response), response))
 
 
+cli.add_command(contact)
 cli.add_command(station)
 cli.add_command(all_stations)

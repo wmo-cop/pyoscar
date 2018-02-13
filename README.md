@@ -38,10 +38,38 @@ python setup.py install
 ## Running pyoscar via the Command Line
 
 ```bash
-# pygawsis:
-# - get all stations
+# help
+pyoscar --help
+
+# get version
+pyoscar --version
+
+# get all station identifiers
+pyoscar all_stations 
+
+# get a single station by WMO identifier
+pyoscar station --identifier 71151
+
+# get a single station by WIGOS identifier
+pyoscar station --identifier 0-20000-0-71151
+
+# add verbose mode (ERROR, WARNING, INFO, DEBUG)
+pyoscar station --identifier 0-20000-0-71151 --verbosity=DEBUG
+
+# get contact by country
+pyoscar contact -c Canada
+
+# get contact by surname
+pyoscar contact -s Karn
+
+# get contact by organization
+pyoscar contact -o "Environment Canada"
+
+# gawsis
+
+# get all stations
 pygawsis all_stations
-# - get station report by GAW ID
+# get station report by GAW ID
 pygawsis station --gaw-id LEO
 ```
 
