@@ -52,13 +52,13 @@ class OSCARTest(unittest.TestCase):
     """Test case for package pyoscar.oscar"""
 
     @patch('pyoscar.oscar.requests.get')
-    def test_all_stations(self, mock_get):
+    def itest_all_stations(self, mock_get):
         """test listing of all stations"""
 
         mock_response = mock.Mock()
         mock_response.ok = True
 
-        with open(get_abspath('test.all_stations.json')) as ff:
+        with open(get_abspath('test.all_stations_names.json')) as ff:
             mock_response.json.return_value = json.load(ff)
 
         mock_get.return_value = mock_response
@@ -75,10 +75,16 @@ class OSCARTest(unittest.TestCase):
         mock_response = mock.Mock()
         mock_response.ok = True
 
+        with open(get_abspath('test.all_stations.wmoids.json')) as ff:
+            se1 = json.load(ff)
         with open(get_abspath('test.station.json')) as ff:
-            mock_response.json.return_value = json.load(ff)
+            se2 = json.load(ff)
 
-        mock_get.return_value = mock_response
+        fake_responses = [mock.Mock(), mock.Mock()]
+        fake_responses[0].json.return_value = se1
+        fake_responses[1].json.return_value = se2
+
+        mock_get.side_effect = fake_responses
 
         o = OSCARClient()
         station = o.get_station_report('0-20000-0-71758')
@@ -89,8 +95,9 @@ class OSCARTest(unittest.TestCase):
         mock_response = mock.Mock()
         mock_response.ok = False
         mock_response.status_code = 404
+        mock_response.json.return_value = {}
 
-        mock_get.return_value = mock_response
+        mock_get.side_effect = [mock_response]
 
         station = o.get_station_report('non-existent-station')
         self.assertIsInstance(station, dict)

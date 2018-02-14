@@ -182,7 +182,8 @@ class OSCARClient(object):
         LOGGER.debug('Request: {}'.format(response.url))
         LOGGER.debug('Response: {}'.format(response.status_code))
 
-        for item in response.json():
+        i = response.json()
+        for item in i:
             if '-' in identifier:
                 if item['text'] == identifier:
                     found = True
