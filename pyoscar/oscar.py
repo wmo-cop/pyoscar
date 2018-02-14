@@ -95,7 +95,7 @@ class OSCARClient(object):
 
         LOGGER.debug('Fetching all WMO identifiers')
 
-        if program.lower() == 'gaw':
+        if program is not None and program.lower() == 'gaw':
             LOGGER.debug('Fetching only GAW stations')
             request = os.path.join(self.url,
                                    'stations/approvedStations/gawIds')
@@ -103,8 +103,8 @@ class OSCARClient(object):
             request = os.path.join(self.url,
                                    'stations/approvedStations/wmoIds')
 
-        LOGGER.debug('Request: {}'.format(request))
         response = requests.get(request, headers=self.headers, params=params)
+        LOGGER.debug('Request: {}'.format(response.url))
         LOGGER.debug('Response: {}'.format(response.status_code))
 
         wmoids = response.json()
@@ -128,11 +128,11 @@ class OSCARClient(object):
         LOGGER.debug('Fetching all contacts')
 
         request = os.path.join(self.url, 'contacts')
-        LOGGER.debug('Request: {}'.format(request))
-        response = requests.get(request, headers=self.headers).json()
+        response = requests.get(request, headers=self.headers)
+        LOGGER.debug('Request: {}'.format(response.url))
         LOGGER.debug('Response: {}'.format(response.status_code))
 
-        for c in response:
+        for c in response.json():
             if country is not None and country == c['countryName']:
                 ids.append(c['id'])
             if surname is not None and surname == c['surname']:
@@ -143,10 +143,10 @@ class OSCARClient(object):
         for id_ in ids:
             LOGGER.debug('Fetching contact {}'.format(id_))
             request = os.path.join(self.url, 'contacts/contact', str(id_))
-            LOGGER.debug('Request: {}'.format(request))
-            response = requests.get(request, headers=self.headers).json()
+            response = requests.get(request, headers=self.headers)
+            LOGGER.debug('Request: {}'.format(response.url))
             LOGGER.debug('Response: {}'.format(response.status_code))
-            matches.append(response)
+            matches.append(response.json())
 
         return matches
 
@@ -178,9 +178,11 @@ class OSCARClient(object):
 
         LOGGER.debug('Fetching all identifiers')
         response = requests.get(request, headers=self.headers,
-                                params=params).json()
+                                params=params)
+        LOGGER.debug('Request: {}'.format(response.url))
+        LOGGER.debug('Response: {}'.format(response.status_code))
 
-        for item in response:
+        for item in response.json():
             if '-' in identifier:
                 if item['text'] == identifier:
                     found = True
@@ -196,6 +198,8 @@ class OSCARClient(object):
                                    found_identifier, 'stationReport')
 
             response = requests.get(request, headers=self.headers)
+            LOGGER.debug('Request: {}'.format(response.url))
+            LOGGER.debug('Response: {}'.format(response.status_code))
 
             return response.json()
         else:
