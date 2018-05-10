@@ -51,6 +51,10 @@ class GAWSISClient(OSCARClient):
 
         OSCARClient.__init__(self, url, username, password, timeout)
 
+        def __repr__(self):
+            """repr function"""
+            return '<GAWSISClient (filename: {})>'.format(self.filename)
+
     def get_all_stations(self):
         """
         get all stations

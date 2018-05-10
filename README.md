@@ -2,8 +2,8 @@
 
 Pythonic API to WMO OSCAR
 
-[![Build Status](https://travis-ci.org/WMO-ET-WDC/pyoscar.png)](https://travis-ci.org/WMO-ET-WDC/pyoscar)
-[![Coverage Status](https://coveralls.io/repos/github/WMO-ET-WDC/pyoscar/badge.svg?branch=master)](https://coveralls.io/github/WMO-ET-WDC/pyoscar?branch=master)
+[![Build Status](https://travis-ci.org/wmo-cop/pyoscar.png)](https://travis-ci.org/wmo-cop/pyoscar)
+[![Coverage Status](https://coveralls.io/repos/github/wmo-cop/pyoscar/badge.svg?branch=master)](https://coveralls.io/github/wmo-cop/pyoscar?branch=master)
 
 # Overview
 
@@ -29,7 +29,7 @@ cd pyoscar
 source bin/activate
 
 # clone codebase and install
-git clone https://github.com/WMO-ET-WDC/pyoscar.git
+git clone https://github.com/wmo-cop/pyoscar.git
 cd pyoscar
 python setup.py build
 python setup.py install
@@ -110,7 +110,7 @@ coverage report -m
 
 ### Bugs and Issues
 
-All bugs, enhancements and issues are managed on [GitHub](https://github.com/WMO-ET-WDC/pyoscar/issues).
+All bugs, enhancements and issues are managed on [GitHub](https://github.com/wmo-cop/pyoscar/issues).
 
 ## Contact
 
