@@ -65,6 +65,9 @@ pyoscar contact -s Karn
 # get contact by organization
 pyoscar contact -o "Environment Canada"
 
+# upload WMDR XML
+pyoscar upload -x /path/to/wmdr.xml -at API_TOKEN
+
 # gawsis
 
 # get all stations
