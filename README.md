@@ -44,8 +44,12 @@ pyoscar --help
 # get version
 pyoscar --version
 
+# all subcommands support the following options:
+# --env (dev or ops, default dev)
+# --verbosity (DEBUG, INFO, ERROR, NONE, default NONE)
+
 # get all station identifiers
-pyoscar all_stations 
+pyoscar all_stations
 
 # get a single station by WMO identifier
 pyoscar station --identifier 71151
@@ -65,8 +69,8 @@ pyoscar contact -s Karn
 # get contact by organization
 pyoscar contact -o "Environment Canada"
 
-# upload WMDR XML
-pyoscar upload -x /path/to/wmdr.xml -at API_TOKEN
+# upload WMDR XML (to operational environment)
+pyoscar upload -x /path/to/wmdr.xml -at API_TOKEN -e ops
 
 # gawsis
 

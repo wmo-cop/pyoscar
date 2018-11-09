@@ -237,12 +237,14 @@ def cli():
 @click.command()
 @click.pass_context
 @click.option('--country', '-c', help='Country')
+@click.option('--env', '-e', default='dev', type=click.Choice(['dev', 'ops']),
+              help='OSCAR environment to run against (default=dev)')
 @click.option('--surname', '-s', help='Surname')
 @click.option('--organization', '-o', help='Organization')
 @click.option('--verbosity', '-v',
               type=click.Choice(['ERROR', 'WARNING', 'INFO', 'DEBUG']),
               help='Verbosity')
-def contact(ctx, country=None, surname=None, organization=None,
+def contact(ctx, env, country=None, surname=None, organization=None,
             verbosity=None):
     """get contact information"""
 
@@ -255,7 +257,7 @@ def contact(ctx, country=None, surname=None, organization=None,
     else:
         logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-    o = OSCARClient()
+    o = OSCARClient(env=env)
 
     response = json.dumps(o.get_contact(country, surname, organization),
                           indent=4)
@@ -265,12 +267,14 @@ def contact(ctx, country=None, surname=None, organization=None,
 
 @click.command()
 @click.pass_context
+@click.option('--env', '-e', default='dev', type=click.Choice(['dev', 'ops']),
+              help='OSCAR environment to run against (default=dev)')
 @click.option('--identifier', '-i',
               help='identifier (WIGOS or WMO identifier')
 @click.option('--verbosity', '-v',
               type=click.Choice(['ERROR', 'WARNING', 'INFO', 'DEBUG']),
               help='Verbosity')
-def station(ctx, identifier, verbosity=None):
+def station(ctx, env, identifier, verbosity=None):
     """get station report"""
 
     if identifier is None:
@@ -282,7 +286,7 @@ def station(ctx, identifier, verbosity=None):
     else:
         logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-    o = OSCARClient()
+    o = OSCARClient(env=env)
 
     response = json.dumps(o.get_station_report(identifier), indent=4)
 
@@ -291,11 +295,13 @@ def station(ctx, identifier, verbosity=None):
 
 @click.command()
 @click.pass_context
+@click.option('--env', '-e', default='dev', type=click.Choice(['dev', 'ops']),
+              help='OSCAR environment to run against (default=dev)')
 @click.option('--program', '-p', help='Program (currently only GAW supported)')
 @click.option('--verbosity', '-v',
               type=click.Choice(['ERROR', 'WARNING', 'INFO', 'DEBUG']),
               help='Verbosity')
-def all_stations(ctx, program=None, verbosity=None):
+def all_stations(ctx, env, program=None, verbosity=None):
     """get all stations"""
 
     if verbosity is not None:
@@ -303,7 +309,7 @@ def all_stations(ctx, program=None, verbosity=None):
     else:
         logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-    o = OSCARClient()
+    o = OSCARClient(env=env)
 
     response = json.dumps(o.get_all_stations(program=program), indent=4)
 
