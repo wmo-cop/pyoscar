@@ -46,7 +46,7 @@ pyoscar --version
 
 # all subcommands support the following options:
 # --env (dev or ops, default dev)
-# --verbosity (DEBUG, INFO, ERROR, NONE, default NONE)
+# --verbosity (ERROR, WARNING, INFO, DEBUG, default NONE)
 
 # get all station identifiers
 pyoscar all_stations
