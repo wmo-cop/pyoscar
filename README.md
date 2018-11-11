@@ -45,7 +45,7 @@ pyoscar --help
 pyoscar --version
 
 # all subcommands support the following options:
-# --env (dev or ops, default dev)
+# --env (depl or prod, default depl)
 # --verbosity (ERROR, WARNING, INFO, DEBUG, default NONE)
 
 # get all station identifiers
@@ -69,8 +69,8 @@ pyoscar contact -s Karn
 # get contact by organization
 pyoscar contact -o "Environment Canada"
 
-# upload WMDR XML (to operational environment)
-pyoscar upload -x /path/to/wmdr.xml -at API_TOKEN -e ops
+# upload WMDR XML (to production environment)
+pyoscar upload -x /path/to/wmdr.xml -at API_TOKEN -e prod
 
 # gawsis
 

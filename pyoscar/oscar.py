@@ -42,14 +42,14 @@ LOGGER = logging.getLogger(__name__)
 class OSCARClient(object):
     """OSCAR client API"""
 
-    def __init__(self, env='dev', api_token=None, timeout=30):
+    def __init__(self, env='depl', api_token=None, timeout=30):
         """
         Initialize an OSCAR Client.
         :returns: instance of pyoscar.oscar.OSCARClient
         """
 
         self.env = env
-        """OSCAR environment (dev or ops)"""
+        """OSCAR environment (depl or prod)"""
 
         self.url = None
         """URL to OSCAR API"""
@@ -69,7 +69,7 @@ class OSCARClient(object):
         """HTTP headers dictionary applied with requests"""
 
         LOGGER.debug('Setting URL')
-        if self.env == 'ops':
+        if self.env == 'prod':
             self.url = 'https://oscar.wmo.int/surface/rest/api/'
         else:
             self.url = 'https://oscardepl.wmo.int/surface/rest/api/'
@@ -237,8 +237,9 @@ def cli():
 @click.command()
 @click.pass_context
 @click.option('--country', '-c', help='Country')
-@click.option('--env', '-e', default='dev', type=click.Choice(['dev', 'ops']),
-              help='OSCAR environment to run against (default=dev)')
+@click.option('--env', '-e', default='depl',
+              type=click.Choice(['depl', 'prod']),
+              help='OSCAR environment to run against (default=depl)')
 @click.option('--surname', '-s', help='Surname')
 @click.option('--organization', '-o', help='Organization')
 @click.option('--verbosity', '-v',
@@ -267,8 +268,9 @@ def contact(ctx, env, country=None, surname=None, organization=None,
 
 @click.command()
 @click.pass_context
-@click.option('--env', '-e', default='dev', type=click.Choice(['dev', 'ops']),
-              help='OSCAR environment to run against (default=dev)')
+@click.option('--env', '-e', default='depl',
+              type=click.Choice(['depl', 'prod']),
+              help='OSCAR environment to run against (default=depl)')
 @click.option('--identifier', '-i',
               help='identifier (WIGOS or WMO identifier')
 @click.option('--verbosity', '-v',
@@ -295,8 +297,9 @@ def station(ctx, env, identifier, verbosity=None):
 
 @click.command()
 @click.pass_context
-@click.option('--env', '-e', default='dev', type=click.Choice(['dev', 'ops']),
-              help='OSCAR environment to run against (default=dev)')
+@click.option('--env', '-e', default='depl',
+              type=click.Choice(['depl', 'prod']),
+              help='OSCAR environment to run against (default=depl)')
 @click.option('--program', '-p', help='Program (currently only GAW supported)')
 @click.option('--verbosity', '-v',
               type=click.Choice(['ERROR', 'WARNING', 'INFO', 'DEBUG']),
@@ -320,8 +323,9 @@ def all_stations(ctx, env, program=None, verbosity=None):
 @click.command()
 @click.pass_context
 @click.option('--api-token', '-at', 'api_token', help='API token')
-@click.option('--env', '-e', default='dev', type=click.Choice(['dev', 'ops']),
-              help='OSCAR environment to run against (default=dev)')
+@click.option('--env', '-e', default='depl',
+              type=click.Choice(['depl', 'prod']),
+              help='OSCAR environment to run against (default=depl)')
 @click.option('--xml', '-x', help='WMDR XML')
 @click.option('--verbosity', '-v',
               type=click.Choice(['ERROR', 'WARNING', 'INFO', 'DEBUG']),
@@ -341,7 +345,8 @@ def upload(ctx, api_token, env, xml, verbosity=None):
         raise click.ClickException('--api-token/-at required')
 
     o = OSCARClient(api_token=api_token, env=env)
-    click.echo('Running against OSCAR {} ({})'.format(env, o.url))
+    click.echo('Sending {} to OSCAR {} environment ({})'.format(
+               xml, env, o.url))
 
     with open(xml) as fh:
         data = fh.read()
