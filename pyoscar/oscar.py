@@ -150,11 +150,12 @@ class OSCARClient(object):
 
         return matches
 
-    def get_station_report(self, identifier):
+    def get_station_report(self, identifier, format_='JSON'):
         """
         get station information by WIGOS or WMO identifier
 
         :param identifier: identifier (WIGOS or WMO identifier)
+        :param format_: format (JSON [default] or XML)
 
         :returns: dictionary of matching station report
         """
@@ -195,14 +196,21 @@ class OSCARClient(object):
 
         if found:
             LOGGER.debug('Fetching station report {}'.format(found_identifier))
-            request = os.path.join(self.url, 'stations/station',
-                                   found_identifier, 'stationReport')
+            if format_ == 'XML':
+                request = os.path.join(self.url, 'wmd/download',
+                                       found_identifier)
+            else:
+                request = os.path.join(self.url, 'stations/station',
+                                       found_identifier, 'stationReport')
 
             response = requests.get(request, headers=self.headers)
             LOGGER.debug('Request: {}'.format(response.url))
             LOGGER.debug('Response: {}'.format(response.status_code))
 
-            return response.json()
+            if format_ == 'XML':
+                return response.text
+            else:
+                return response.json()
         else:
             LOGGER.warning('Station not found')
             return {}
@@ -273,10 +281,12 @@ def contact(ctx, env, country=None, surname=None, organization=None,
               help='OSCAR environment to run against (default=depl)')
 @click.option('--identifier', '-i',
               help='identifier (WIGOS or WMO identifier')
+@click.option('--format', '-f', 'format_', type=click.Choice(['JSON', 'XML']),
+              default='JSON', help='Format')
 @click.option('--verbosity', '-v',
               type=click.Choice(['ERROR', 'WARNING', 'INFO', 'DEBUG']),
               help='Verbosity')
-def station(ctx, env, identifier, verbosity=None):
+def station(ctx, env, identifier, format_='JSON', verbosity=None):
     """get station report"""
 
     if identifier is None:
@@ -290,12 +300,16 @@ def station(ctx, env, identifier, verbosity=None):
 
     o = OSCARClient(env=env)
 
-    response = json.dumps(o.get_station_report(identifier), indent=4)
+    if format_ == 'XML':
+        response = o.get_station_report(identifier, format_)
+    else:
+        response = json.dumps(
+            o.get_station_report(identifier, format_), indent=4)
 
     click.echo_via_pager(response)
 
 
-@click.command()
+@click.command('all-stations')
 @click.pass_context
 @click.option('--env', '-e', default='depl',
               type=click.Choice(['depl', 'prod']),

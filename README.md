@@ -57,6 +57,9 @@ pyoscar station --identifier 71151
 # get a single station by WIGOS identifier
 pyoscar station --identifier 0-20000-0-71151
 
+# get a single station by WIGOS identifier in WIGOS XML format
+pyoscar station --identifier 0-20000-0-71151 --format=XML
+
 # add verbose mode (ERROR, WARNING, INFO, DEBUG)
 pyoscar station --identifier 0-20000-0-71151 --verbosity=DEBUG
 
