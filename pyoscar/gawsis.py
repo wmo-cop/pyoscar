@@ -135,7 +135,7 @@ def station(ctx, gaw_id):
     click.echo_via_pager(response)
 
 
-@click.command()
+@click.command('all-stations')
 @click.pass_context
 def all_stations(ctx):
     """get all stations"""

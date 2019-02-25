@@ -49,7 +49,7 @@ pyoscar --version
 # --verbosity (ERROR, WARNING, INFO, DEBUG, default NONE)
 
 # get all station identifiers
-pyoscar all_stations
+pyoscar all-stations
 
 # get a single station by WMO identifier
 pyoscar station --identifier 71151
@@ -78,7 +78,7 @@ pyoscar upload -x /path/to/wmdr.xml -at API_TOKEN -e prod
 # gawsis
 
 # get all stations
-pygawsis all_stations
+pygawsis all-stations
 # get station report by GAW ID
 pygawsis station --gaw-id LEO
 ```
