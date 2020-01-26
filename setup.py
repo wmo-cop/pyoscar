@@ -123,8 +123,7 @@ setup(
     include_package_data=True,
     entry_points={
         'console_scripts': [
-            'pyoscar=pyoscar.oscar:cli',
-            'pygawsis=pyoscar.gawsis:cli'
+            'pyoscar=pyoscar:cli'
         ]
     },
     classifiers=[

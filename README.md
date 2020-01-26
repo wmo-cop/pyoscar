@@ -7,8 +7,7 @@ Pythonic API to WMO OSCAR
 
 # Overview
 
-pyoscar provides a Pythonic API atop the WMO [OSCAR](https://oscar.wmo.int/surface/index.html)
-and [GAWSIS](https://gawsis.meteoswiss.ch/GAWSIS/index.html) HTTP APIs.
+pyoscar provides a Pythonic API atop the WMO [OSCAR](https://oscar.wmo.int/surface/index.html) HTTP API.
 
 # Installation
 
@@ -49,7 +48,13 @@ pyoscar --version
 # --verbosity (ERROR, WARNING, INFO, DEBUG, default NONE)
 
 # get all station identifiers
-pyoscar all-stations
+pyoscar stations
+
+# get all station identifiers by country
+pyoscar stations --country=CAN
+
+# get all station identifiers by program affiliation
+pyoscar stations --program=GAW
 
 # get a single station by WMO identifier
 pyoscar station --identifier 71151
@@ -75,22 +80,20 @@ pyoscar contact -o "Environment Canada"
 # upload WMDR XML (to production environment)
 pyoscar upload -x /path/to/wmdr.xml -at API_TOKEN -e prod
 
-# gawsis
-
-# get all stations
-pygawsis all-stations
-# get station report by GAW ID
-pygawsis station --gaw-id LEO
-```
-
 ## Using the pyoscar API
 
-```
-from pyoscar.gawsis import GAWSISClient
+```python
+from pyoscar import OSCARClient
 
-client = GAWSISClient()
+client = OSCARClient()
 
-all_stations = client.get_all_stations()
+# get all Canadian stations
+stations = client.get_stations(country='CAN')
+
+# get all Canadian stations
+stations = client.get_stations(program='GAW')
+
+# get invididual station report
 stn_leo = client.get_station_report('LEO')
 ```
 

@@ -28,7 +28,7 @@ import io
 import os
 import unittest
 
-from pyoscar.oscar import OSCARClient
+from pyoscar import OSCARClient
 
 try:
     from unittest import mock
@@ -49,10 +49,10 @@ def read(filename, encoding='utf-8'):
 
 
 class OSCARTest(unittest.TestCase):
-    """Test case for package pyoscar.oscar"""
+    """Test case for package pyoscar"""
 
-    @patch('pyoscar.oscar.requests.get')
-    def itest_all_stations(self, mock_get):
+    @patch('pyoscar.requests.get')
+    def itest_stations(self, mock_get):
         """test listing of all stations"""
 
         mock_response = mock.Mock()
@@ -64,11 +64,11 @@ class OSCARTest(unittest.TestCase):
         mock_get.return_value = mock_response
 
         o = OSCARClient()
-        all_stations = o.get_all_stations()
-        self.assertIsInstance(all_stations, list)
-        self.assertEqual(all_stations[0], 'A12-CPP')
+        stations = o.get_stations()
+        self.assertIsInstance(stations, list)
+        self.assertEqual(stations[0], 'A12-CPP')
 
-    @patch('pyoscar.oscar.requests.get')
+    @patch('pyoscar.requests.get')
     def test_get_station_report(self, mock_get):
         """test single station report"""
 
@@ -94,8 +94,8 @@ class OSCARTest(unittest.TestCase):
 
         mock_response = mock.Mock()
         mock_response.ok = False
-        mock_response.status_code = 404
-        mock_response.json.return_value = {}
+        mock_response.status_code = 200
+        mock_response.json.return_value = se1
 
         mock_get.side_effect = [mock_response]
 
