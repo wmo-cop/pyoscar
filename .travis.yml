@@ -1,13 +1,5 @@
 language: python
 
-virtualenv:
-  system_site_packages: true
-
-addons:
-  apt:
-    packages:
-      - pandoc
-
 python:
   - "3.6"
   - "3.7"
@@ -22,7 +14,6 @@ script:
   - find . -type f -name "*.py" | xargs flake8
 
 after_success:
-  - python setup.py --long-description | rst2html5.py
   - coverage run --source=pyoscar -m unittest pyoscar.tests.run_tests
   - coverage report -m
   - coveralls
