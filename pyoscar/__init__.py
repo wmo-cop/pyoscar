@@ -45,7 +45,8 @@ class OSCARClient(object):
     def __init__(self, env='depl', api_token=None, timeout=30):
         """
         Initialize an OSCAR Client.
-        :returns: instance of pyoscar.OSCARClient
+
+        :returns: `pyoscar.OSCARClient`
         """
 
         self.env = env
@@ -84,7 +85,7 @@ class OSCARClient(object):
         :param program: program/network
         :param country: 3 letter country name
 
-        :returns: list of all matching stations
+        :returns: `list` of all matching stations
         """
 
         request = os.path.join(self.url, 'search/station')
@@ -114,7 +115,7 @@ class OSCARClient(object):
         :param surname: Surname of contact
         :param organization: Organization of contact
 
-        returns: dictionary of matching contact
+        returns: `dict` of matching contact
         """
 
         ids = []
@@ -152,72 +153,35 @@ class OSCARClient(object):
         :param identifier: identifier (WIGOS or WMO identifier)
         :param format_: format (JSON [default] or XML)
 
-        :returns: dictionary of matching station report
+        :returns: `dict` of matching station report
         """
 
-        if '-' in identifier:
-            identifier_ = identifier.split('-')[-1]
+        LOGGER.debug('Fetching station report {}'.format(identifier))
+        if format_ == 'XML':
+            LOGGER.debug('Trying WIGOS XML download')
+            request = os.path.join(self.url, 'wmd/download', identifier)
         else:
-            identifier_ = identifier
+            request = os.path.join(self.url, 'stations/station',
+                                   identifier, 'stationReport')
 
-        found = False
-        found_identifier = None
-
-        params = {
-            'q': '',
-            'page': 1,
-            'pageSize': 100000
-        }
-
-        request = os.path.join(self.url,
-                               'stations/approvedStations/wigosIds')
-
-        LOGGER.debug('Fetching all identifiers')
-        response = requests.get(request, headers=self.headers,
-                                params=params)
+        response = requests.get(request, headers=self.headers)
         LOGGER.debug('Request: {}'.format(response.url))
         LOGGER.debug('Response: {}'.format(response.status_code))
 
-        i = response.json()
+        response.raise_for_status()
 
-        for item in i['resultList']:
-            if '-' in identifier:
-                if item['text'] == identifier:
-                    found = True
-                    found_identifier = item['id']
-            else:
-                if item['text'].endswith(identifier_):
-                    found = True
-                    found_identifier = item['id']
-
-        if found:
-            LOGGER.debug('Fetching station report {}'.format(found_identifier))
-            if format_ == 'XML':
-                request = os.path.join(self.url, 'wmd/download',
-                                       found_identifier)
-            else:
-                request = os.path.join(self.url, 'stations/station',
-                                       found_identifier, 'stationReport')
-
-            response = requests.get(request, headers=self.headers)
-            LOGGER.debug('Request: {}'.format(response.url))
-            LOGGER.debug('Response: {}'.format(response.status_code))
-
-            if format_ == 'XML':
-                return response.text
-            else:
-                return response.json()
+        if format_ == 'XML':
+            return response.text
         else:
-            LOGGER.warning('Station not found')
-            return {}
+            return response.json()
 
     def upload(self, xml_data):
         """
         upload WMDR XML to OSCAR M2M API
 
-        :param xml: buffer/string of XML
+        :param xml: `str` of XML
 
-        :returns: dict of result
+        :returns: `dict` of result
         """
 
         url = os.path.join(self.url, 'wmd/upload')

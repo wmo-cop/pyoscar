@@ -75,14 +75,11 @@ class OSCARTest(unittest.TestCase):
         mock_response = mock.Mock()
         mock_response.ok = True
 
-        with open(get_abspath('test.all_stations.wmoids.json')) as ff:
-            se1 = json.load(ff)
         with open(get_abspath('test.station.json')) as ff:
-            se2 = json.load(ff)
+            se1 = json.load(ff)
 
-        fake_responses = [mock.Mock(), mock.Mock()]
+        fake_responses = [mock.Mock()]
         fake_responses[0].json.return_value = se1
-        fake_responses[1].json.return_value = se2
 
         mock_get.side_effect = fake_responses
 
@@ -95,7 +92,7 @@ class OSCARTest(unittest.TestCase):
         mock_response = mock.Mock()
         mock_response.ok = False
         mock_response.status_code = 200
-        mock_response.json.return_value = se1
+        mock_response.json.return_value = {}
 
         mock_get.side_effect = [mock_response]
 
