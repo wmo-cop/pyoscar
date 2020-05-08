@@ -12,8 +12,8 @@ pyoscar provides a Pythonic API atop the WMO [OSCAR](https://oscar.wmo.int/surfa
 # Installation
 
 ## Requirements
-- Python 3.  Should work with 2.7
-- [virtualenv](https://virtualenv.pypa.io/)
+- Python 3
+- [virtualenv](https://virtualenv.pypa.io/) or [Conda](https://docs.conda.io)
 
 ### Dependencies
 Dependencies are listed in [requirements.txt](requirements.txt). Dependencies
@@ -21,9 +21,17 @@ are automatically installed during pyoscar installation.
 
 ## Installing pyoscar
 
+### For users
+
+```bash
+pip install pyoscar
+```
+
+### For developers
+
 ```bash
 # setup virtualenv
-virtualenv --system-site-packages -p python3 pyoscar
+python3 -m venv pyoscar
 cd pyoscar
 source bin/activate
 
@@ -79,6 +87,7 @@ pyoscar contact -o "Environment Canada"
 
 # upload WMDR XML (to production environment)
 pyoscar upload -x /path/to/wmdr.xml -at API_TOKEN -e prod
+```
 
 ## Using the pyoscar API
 
@@ -115,6 +124,13 @@ python setup.py test
 # measure code coverage
 coverage run --source=pyoscar -m unittest pyoscar.tests.run_tests
 coverage report -m
+```
+
+## Releasing
+
+```bash
+python setup.py sdist bdist_wheel --universal
+twine upload dist/*
 ```
 
 ### Code Conventions

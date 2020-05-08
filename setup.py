@@ -99,6 +99,7 @@ setup(
     version=get_package_version(),
     description=DESCRIPTION.strip(),
     long_description=LONG_DESCRIPTION,
+    long_description_content_type='text/markdown',
     license='MIT',
     platforms='all',
     keywords=' '.join([
@@ -111,7 +112,7 @@ setup(
     author='Meteorological Service of Canada',
     author_email='tom.kralidis@canada.ca',
     maintainer='Meteorological Service of Canada',
-    maintainer_email='tom.kralidis@canada.ca',
+    maintainer_email='tomkralidis@gmail.com',
     url='https://github.com/wmo-cop/pyoscar',
     install_requires=read('requirements.txt').splitlines(),
     packages=find_packages(exclude=['pyoscar.tests']),

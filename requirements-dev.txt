@@ -1,2 +1,4 @@
-flake8
 coverage
+flake8
+twine
+wheel
