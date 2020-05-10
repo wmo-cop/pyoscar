@@ -23,8 +23,16 @@ are automatically installed during pyoscar installation.
 
 ### For users
 
+To install the latest stable version:
+
 ```bash
 pip install pyoscar
+```
+
+To keep up to date with stable updates:
+
+```bash
+pip install pyoscar -U
 ```
 
 ### For developers
@@ -104,6 +112,20 @@ stations = client.get_stations(program='GAW')
 
 # get invididual station report
 stn_leo = client.get_station_report('LEO')
+
+
+# upload WMDR XML
+
+## instantiate client to OSCAR DEPL (default)
+client = OSCARClient(api_token='foo')
+
+## ...or to OSCAR production
+client = OSCARClient(api_token='foo', env='prod')
+
+with open('some-wmdr-file.xml') as fh:
+    data = fh.read()
+
+response = client.upload(data)
 ```
 
 ## Development
@@ -115,14 +137,14 @@ stn_leo = client.get_station_report('LEO')
 pip install -r requirements-dev.txt
 
 # run tests like this:
-cd pyoscar/tests
+cd tests
 python run_tests.py
 
 # or like this:
 python setup.py test
 
 # measure code coverage
-coverage run --source=pyoscar -m unittest pyoscar.tests.run_tests
+coverage run --source pyoscar setup.py test
 coverage report -m
 ```
 

@@ -1,0 +1,5 @@
+{
+    "id": 67610,
+    "xmlStatus": "SUCCESS_WITH_WARNINGS",
+    "logs": "The list below is organized by section header and shows exceptions/issues \u2013 if any \u2013 that may have resulted from the processing of the XML (NB: Section headers are always displayed).\n# Facility with identifier \"0-20000-0-73075\"\nREF_7: Received XML element \"observation/OM_Observation/metadata/MD_Metadata/contactInstructions\" has a value WMO306_CD  which could not be found. The value will be replaced by the \"(unknown)\" value.\nREF_3: The element \"ObservingFacility/\u2026/programAffiliation\" with WMO306_CD = \"nonAffiliated\" is not linked with any observation under \"observation/programAffilation\". The element is discarded.\nREF_9: The element \"observation/ObservingCapability\" is mandatory. The \"facility\" is discarded.\nREF_9: The element \"programAffiliation\" is mandatory. The \"facility\" is discarded.\n"
+}

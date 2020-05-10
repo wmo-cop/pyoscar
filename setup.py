@@ -46,7 +46,7 @@ class PyTest(Command):
     def run(self):
         import subprocess
         errno = subprocess.call([sys.executable,
-                                 'pyoscar/tests/run_tests.py'])
+                                 'tests/run_tests.py'])
         raise SystemExit(errno)
 
 
@@ -62,9 +62,8 @@ class PyCoverage(Command):
     def run(self):
         import subprocess
 
-        errno = subprocess.call(['coverage', 'run', '--source=pyoscar',
-                                 '-m', 'unittest',
-                                 'pyoscar.tests.run_tests'])
+        errno = subprocess.call(['coverage', 'run', '--source' 'pyoscar',
+                                 'setup.py', 'test'])
         errno = subprocess.call(['coverage', 'report', '-m'])
         raise SystemExit(errno)
 
@@ -115,7 +114,7 @@ setup(
     maintainer_email='tomkralidis@gmail.com',
     url='https://github.com/wmo-cop/pyoscar',
     install_requires=read('requirements.txt').splitlines(),
-    packages=find_packages(exclude=['pyoscar.tests']),
+    packages=find_packages(),
     include_package_data=True,
     entry_points={
         'console_scripts': [
@@ -132,5 +131,6 @@ setup(
         'Programming Language :: Python',
         'Topic :: Scientific/Engineering :: GIS'
     ],
-    cmdclass={'test': PyTest, 'coverage': PyTest}
+    cmdclass={'test': PyTest, 'coverage': PyTest},
+    test_suite='tests.run_tests'
 )

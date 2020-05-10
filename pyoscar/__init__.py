@@ -34,12 +34,13 @@ import logging
 import os
 import requests
 
+from bs4 import BeautifulSoup
 import click
 
 LOGGER = logging.getLogger(__name__)
 
 
-class OSCARClient(object):
+class OSCARClient:
     """OSCAR client API"""
 
     def __init__(self, env='depl', api_token=None, timeout=30):
@@ -187,6 +188,16 @@ class OSCARClient(object):
         url = os.path.join(self.url, 'wmd/upload')
 
         response = requests.post(url, headers=self.headers, data=xml_data)
+
+        if response.status_code != requests.codes.ok:
+            LOGGER.debug(response.status_code)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            err = soup.find_all(id='standardLayouterror')[0].get_text()
+
+            return {
+                'code': response.status_code,
+                'description': err
+            }
 
         return response.json()
 
