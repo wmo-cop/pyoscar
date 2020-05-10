@@ -100,6 +100,37 @@ class OSCARTest(unittest.TestCase):
         self.assertIsInstance(station, dict)
         self.assertEqual(len(station), 0)
 
+    @patch('pyoscar.requests.post')
+    def test_upload(self, mock_post):
+        """test upload"""
+
+        # test success
+        mock_response = mock.Mock()
+        mock_post.return_value = mock_response
+        mock_response.status_code = 200
+
+        with open(get_abspath('test.upload_success.json')) as fh:
+            mock_response.json.return_value = json.load(fh)
+
+        o = OSCARClient()
+        result = o.upload('<foo/>')
+        self.assertIsInstance(result, dict)
+        self.assertEqual(result['id'], 67610)
+        self.assertEqual(result['xmlStatus'], 'SUCCESS_WITH_WARNINGS')
+
+        # test error handling
+        mock_response = mock.Mock()
+        mock_post.return_value = mock_response
+        mock_response.status_code = 401
+
+        with open(get_abspath('test.upload_error.html')) as fh:
+            mock_response.text = fh.read()
+
+        o = OSCARClient()
+        result = o.upload('<foo/>')
+        self.assertIsInstance(result, dict)
+        self.assertEqual(result['code'], 401)
+
 
 def get_abspath(filepath):
     """helper function absolute file access"""
