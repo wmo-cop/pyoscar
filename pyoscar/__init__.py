@@ -39,6 +39,14 @@ import click
 
 LOGGER = logging.getLogger(__name__)
 
+FACILITY_TYPE_LOOKUP = {
+    'Lake/River (fixed)': 0,
+    'Land (fixed)': 1,
+    'Sea (mobile)': 2,
+    'Sea (on ice)': 3,
+    'Underwater (mobile)': 8
+}
+
 
 class OSCARClient:
     """OSCAR client API"""
@@ -79,12 +87,20 @@ class OSCARClient:
         if self.api_token is not None:
             self.headers['X-WMO-WMDR-Token'] = self.api_token
 
-    def get_stations(self, program=None, country=None):
+    def get_stations(self, program=None, country=None, station_type=None,
+                     wigos_id=None):
         """
         get all stations
 
         :param program: program/network
         :param country: 3 letter country name
+        :param station_type: station type:
+                             - Lake/River (fixed)
+                             - Land (fixed)
+                             - Sea (mobile)
+                             - Sea (on ice)
+                             - Underwater (mobile)
+        :param wigos_id: WIGOS identifier
 
         :returns: `list` of all matching stations
         """
@@ -95,12 +111,19 @@ class OSCARClient:
 
         params = {}
 
-        if program is not None:
-            LOGGER.debug('Program: {}'.format(program))
-            params['programAffiliation'] = program
-        if country is not None:
-            LOGGER.debug('Country: {}'.format(program))
-            params['territoryName'] = country
+        if wigos_id is not None:
+            LOGGER.debug('WIGOS ID: {}'.format(wigos_id))
+            params['wigosId'] = wigos_id
+        else:
+            if program is not None:
+                LOGGER.debug('Program: {}'.format(program))
+                params['programAffiliation'] = program
+            if country is not None:
+                LOGGER.debug('Country: {}'.format(program))
+                params['territoryName'] = country
+            if station_type is not None:
+                LOGGER.debug('Station type: {}'.format(station_type))
+                params['facilityType'] = FACILITY_TYPE_LOOKUP[station_type]
 
         response = requests.get(request, headers=self.headers, params=params)
         LOGGER.debug('Request: {}'.format(response.url))
@@ -156,6 +179,12 @@ class OSCARClient:
 
         :returns: `dict` of matching station report
         """
+
+        if identifier.startswith('0-'):
+            LOGGER.debug('Searching stations for WIGOS ID: {}'.format(
+                identifier))
+            response = self.get_stations(wigos_id=identifier)
+            identifier = str(response[0]['id'])
 
         LOGGER.debug('Fetching station report {}'.format(identifier))
         if format_ == 'XML':
@@ -287,10 +316,18 @@ def station(ctx, env, identifier, format_='JSON', verbosity=None):
               help='OSCAR environment to run against (default=depl)')
 @click.option('--program', '-p', help='Program Affiliation')
 @click.option('--country', '-c', help='Country (3 letter country code)')
+@click.option('--station-type', '-st', help='Station type',
+              type=click.Choice([
+                  'Lake/River (fixed)',
+                  'Land (fixed)',
+                  'Sea (mobile)',
+                  'Sea (on ice)',
+                  'Underwater (mobile)']))
 @click.option('--verbosity', '-v',
               type=click.Choice(['ERROR', 'WARNING', 'INFO', 'DEBUG']),
               help='Verbosity')
-def stations(ctx, env, program=None, country=None, verbosity=None):
+def stations(ctx, env, program=None, country=None, station_type=None,
+             verbosity=None):
     """get list of OSCAR stations"""
 
     if verbosity is not None:
