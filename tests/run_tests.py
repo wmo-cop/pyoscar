@@ -75,11 +75,14 @@ class OSCARTest(unittest.TestCase):
         mock_response = mock.Mock()
         mock_response.ok = True
 
+        with open(get_abspath('test.station-wigos.json')) as ff:
+            sel0 = json.load(ff)
         with open(get_abspath('test.station.json')) as ff:
-            se1 = json.load(ff)
+            sel1 = json.load(ff)
 
-        fake_responses = [mock.Mock()]
-        fake_responses[0].json.return_value = se1
+        fake_responses = [mock.Mock(), mock.Mock()]
+        fake_responses[0].json.return_value = sel0
+        fake_responses[1].json.return_value = sel1
 
         mock_get.side_effect = fake_responses
 
