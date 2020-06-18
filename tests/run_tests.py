@@ -99,9 +99,10 @@ class OSCARTest(unittest.TestCase):
 
         mock_get.side_effect = [mock_response]
 
-        station = o.get_station_report('non-existent-station')
-        self.assertIsInstance(station, dict)
-        self.assertEqual(len(station), 0)
+        with self.assertRaises(RuntimeError):
+            station = o.get_station_report('non-existent-station')
+            self.assertIsInstance(station, dict)
+            self.assertEqual(len(station), 0)
 
     @patch('pyoscar.requests.post')
     def test_upload(self, mock_post):

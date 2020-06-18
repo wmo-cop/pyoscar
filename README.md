@@ -72,9 +72,6 @@ pyoscar stations --country=CAN
 # get all station identifiers by program affiliation
 pyoscar stations --program=GAW
 
-# get a single station by WMO identifier
-pyoscar station --identifier 71151
-
 # get a single station by WIGOS identifier
 pyoscar station --identifier 0-20000-0-71151
 
