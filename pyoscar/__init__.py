@@ -39,13 +39,13 @@ import click
 
 LOGGER = logging.getLogger(__name__)
 
-FACILITY_TYPE_LOOKUP = {
-    'Lake/River (fixed)': 0,
-    'Land (fixed)': 1,
-    'Sea (mobile)': 2,
-    'Sea (on ice)': 3,
-    'Underwater (mobile)': 8
-}
+FACILITY_TYPE_LOOKUP = [
+    'lakeRiverFixed',
+    'landFixed',
+    'seaMobile',
+    'seaOnIce',
+    'underwaterMobile'
+]
 
 
 class OSCARClient:
@@ -322,12 +322,7 @@ def station(ctx, env, identifier, format_='JSON', verbosity=None):
 @click.option('--program', '-p', help='Program Affiliation')
 @click.option('--country', '-c', help='Country (3 letter country code)')
 @click.option('--station-type', '-st', help='Station type',
-              type=click.Choice([
-                  'Lake/River (fixed)',
-                  'Land (fixed)',
-                  'Sea (mobile)',
-                  'Sea (on ice)',
-                  'Underwater (mobile)']))
+              type=click.Choice(FACILITY_TYPE_LOOKUP))
 @click.option('--verbosity', '-v',
               type=click.Choice(['ERROR', 'WARNING', 'INFO', 'DEBUG']),
               help='Verbosity')
