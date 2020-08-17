@@ -29,6 +29,8 @@
 
 import click
 
+OPTION_COUNTRY = click.option('--country', '-c', help='Country')
+
 OPTION_ENV = click.option(
     '--env', '-e', default='depl',
     type=click.Choice(['depl', 'prod']),
@@ -38,5 +40,3 @@ OPTION_VERBOSITY = click.option(
     '--verbosity', '-v',
     type=click.Choice(['ERROR', 'WARNING', 'INFO', 'DEBUG']),
     help='Verbosity')
-
-OPTION_COUNTRY = click.option('--country', '-c', help='Country')

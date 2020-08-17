@@ -92,6 +92,9 @@ pyoscar contact -o "Environment Canada"
 
 # upload WMDR XML (to production environment)
 pyoscar upload -x /path/to/wmdr.xml -at API_TOKEN -e prod
+
+# upload WMDR XML (to production environment) and save results to file
+pyoscar upload -x /path/to/wmdr.xml -at API_TOKEN -e prod -l results.log
 ```
 
 ## Using the pyoscar API

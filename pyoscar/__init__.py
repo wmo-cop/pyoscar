@@ -337,8 +337,10 @@ def stations(ctx, env, program=None, country=None, station_type=None,
 @cli_options.OPTION_ENV
 @cli_options.OPTION_VERBOSITY
 @click.option('--api-token', '-at', 'api_token', help='API token')
+@click.option('--log', '-l', type=click.File('a', encoding='utf-8'),
+              help='Name of output file')
 @click.option('--xml', '-x', help='WMDR XML')
-def upload(ctx, api_token, env, xml, verbosity=None):
+def upload(ctx, api_token, env, xml, log, verbosity=None):
     """upload WMDR XML"""
 
     if verbosity is not None:
@@ -361,7 +363,12 @@ def upload(ctx, api_token, env, xml, verbosity=None):
 
     response = o.upload(data)
 
-    click.echo(json.dumps(response, indent=4))
+    response_str = json.dumps(response, indent=4)
+
+    if log is None:
+        click.echo(response_str)
+    else:
+        log.write(response_str + '\n')
 
 
 cli.add_command(contact)
