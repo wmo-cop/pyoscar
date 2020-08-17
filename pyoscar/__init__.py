@@ -37,6 +37,8 @@ import requests
 from bs4 import BeautifulSoup
 import click
 
+from pyoscar import cli_options
+
 LOGGER = logging.getLogger(__name__)
 
 FACILITY_TYPE_LOOKUP = [
@@ -248,15 +250,11 @@ def cli():
 
 @click.command()
 @click.pass_context
-@click.option('--country', '-c', help='Country')
-@click.option('--env', '-e', default='depl',
-              type=click.Choice(['depl', 'prod']),
-              help='OSCAR environment to run against (default=depl)')
+@cli_options.OPTION_COUNTRY
+@cli_options.OPTION_ENV
+@cli_options.OPTION_VERBOSITY
 @click.option('--surname', '-s', help='Surname')
 @click.option('--organization', '-o', help='Organization')
-@click.option('--verbosity', '-v',
-              type=click.Choice(['ERROR', 'WARNING', 'INFO', 'DEBUG']),
-              help='Verbosity')
 def contact(ctx, env, country=None, surname=None, organization=None,
             verbosity=None):
     """get contact information"""
@@ -280,15 +278,11 @@ def contact(ctx, env, country=None, surname=None, organization=None,
 
 @click.command()
 @click.pass_context
-@click.option('--env', '-e', default='depl',
-              type=click.Choice(['depl', 'prod']),
-              help='OSCAR environment to run against (default=depl)')
-@click.option('--identifier', '-i', help='identifier (WIGOS identifier')
+@cli_options.OPTION_ENV
+@cli_options.OPTION_VERBOSITY
+@click.option('--identifier', '-i', help='identifier (WIGOS identifier)')
 @click.option('--format', '-f', 'format_', type=click.Choice(['JSON', 'XML']),
               default='JSON', help='Format')
-@click.option('--verbosity', '-v',
-              type=click.Choice(['ERROR', 'WARNING', 'INFO', 'DEBUG']),
-              help='Verbosity')
 def station(ctx, env, identifier, format_='JSON', verbosity=None):
     """get station report"""
 
@@ -316,16 +310,12 @@ def station(ctx, env, identifier, format_='JSON', verbosity=None):
 
 @click.command('stations')
 @click.pass_context
-@click.option('--env', '-e', default='depl',
-              type=click.Choice(['depl', 'prod']),
-              help='OSCAR environment to run against (default=depl)')
+@cli_options.OPTION_COUNTRY
+@cli_options.OPTION_ENV
+@cli_options.OPTION_VERBOSITY
 @click.option('--program', '-p', help='Program Affiliation')
-@click.option('--country', '-c', help='Country (3 letter country code)')
 @click.option('--station-type', '-st', help='Station type',
               type=click.Choice(FACILITY_TYPE_LOOKUP))
-@click.option('--verbosity', '-v',
-              type=click.Choice(['ERROR', 'WARNING', 'INFO', 'DEBUG']),
-              help='Verbosity')
 def stations(ctx, env, program=None, country=None, station_type=None,
              verbosity=None):
     """get list of OSCAR stations"""
@@ -344,14 +334,10 @@ def stations(ctx, env, program=None, country=None, station_type=None,
 
 @click.command()
 @click.pass_context
+@cli_options.OPTION_ENV
+@cli_options.OPTION_VERBOSITY
 @click.option('--api-token', '-at', 'api_token', help='API token')
-@click.option('--env', '-e', default='depl',
-              type=click.Choice(['depl', 'prod']),
-              help='OSCAR environment to run against (default=depl)')
 @click.option('--xml', '-x', help='WMDR XML')
-@click.option('--verbosity', '-v',
-              type=click.Choice(['ERROR', 'WARNING', 'INFO', 'DEBUG']),
-              help='Verbosity')
 def upload(ctx, api_token, env, xml, verbosity=None):
     """upload WMDR XML"""
 
