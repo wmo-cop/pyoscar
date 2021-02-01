@@ -211,18 +211,27 @@ class OSCARClient:
         else:
             return response.json()
 
-    def upload(self, xml_data):
+    def upload(self, xml_data, only_use_gml_ids=True):
         """
         upload WMDR XML to OSCAR M2M API
 
         :param xml: `str` of XML
+        :param only_use_gml_ids: `bool` of whether to enforce matching
+                                 gml:id for supporting elements
 
         :returns: `dict` of result
         """
 
+        params = {
+            'useOnlyGmlIds': 'TRUE'
+        }
+        if isinstance(only_use_gml_ids, bool):
+            params['useOnlyGmlIds'] = str(only_use_gml_ids).upper()
+
         url = os.path.join(self.url, 'wmd/upload')
 
-        response = requests.post(url, headers=self.headers, data=xml_data)
+        response = requests.post(url, headers=self.headers, data=xml_data,
+                                 params=params)
 
         if response.status_code != requests.codes.ok:
             LOGGER.debug(response.status_code)
