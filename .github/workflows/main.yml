@@ -27,7 +27,7 @@ jobs:
       run: python3 setup.py test
     - name: run test coverage ⚙️
       run: |
-        coverage run --source=pyoscar -m unittest pyoscar.tests.run_tests
+        coverage run --source=pyoscar -m unittest tests.run_tests
         coverage report -m
         coveralls
     - name: run flake8 ⚙️
