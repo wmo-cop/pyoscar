@@ -223,8 +223,9 @@ class OSCARClient:
         """
 
         params = {
-            'useOnlyGmlIds': 'TRUE'
+            'useOnlyGmlIds': 'FALSE'
         }
+
         if isinstance(only_use_gml_ids, bool):
             params['useOnlyGmlIds'] = str(only_use_gml_ids).upper()
 
@@ -349,7 +350,10 @@ def stations(ctx, env, program=None, country=None, station_type=None,
 @click.option('--log', '-l', type=click.File('a', encoding='utf-8'),
               help='Name of output file')
 @click.option('--xml', '-x', help='WMDR XML')
-def upload(ctx, api_token, env, xml, log, verbosity=None):
+@click.option('--only-use-gml-ids', '-g', is_flag=True, default=False,
+              help='use GML ids')
+def upload(ctx, api_token, env, xml, log, only_use_gml_ids=False,
+           verbosity=None):
     """upload WMDR XML"""
 
     if verbosity is not None:
@@ -370,7 +374,7 @@ def upload(ctx, api_token, env, xml, log, verbosity=None):
     with open(xml) as fh:
         data = fh.read()
 
-    response = o.upload(data)
+    response = o.upload(data, only_use_gml_ids=only_use_gml_ids)
 
     response_str = json.dumps(response, indent=4)
 
