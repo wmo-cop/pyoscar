@@ -384,4 +384,3 @@ cli.add_command(contact)
 cli.add_command(station)
 cli.add_command(stations)
 cli.add_command(upload)
-#
