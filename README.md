@@ -2,7 +2,7 @@
 
 Pythonic API to WMO OSCAR
 
-[![Build Status](https://travis-ci.org/wmo-cop/pyoscar.png)](https://travis-ci.org/wmo-cop/pyoscar)
+[![Build Status](https://github.com/wmo-cop/pyoscar/workflows/build%20%E2%9A%99%EF%B8%8F/badge.svg)](https://github.com/wmo-cop/pyoscar/actions)
 [![Coverage Status](https://coveralls.io/repos/github/wmo-cop/pyoscar/badge.svg?branch=master)](https://coveralls.io/github/wmo-cop/pyoscar?branch=master)
 
 # Overview
