@@ -29,7 +29,6 @@ jobs:
       run: |
         coverage run --source=pyoscar -m unittest tests.run_tests
         coverage report -m
-        coveralls
     - name: run flake8 ⚙️
       run: flake8
     - name: build Python package 🏗️
