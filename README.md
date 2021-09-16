@@ -94,6 +94,9 @@ pyoscar upload -x /path/to/wmdr.xml -at API_TOKEN -e prod
 
 # upload WMDR XML (to production environment) and save results to file
 pyoscar upload -x /path/to/wmdr.xml -at API_TOKEN -e prod -l results.log
+
+# harvest all records
+pyoscar harvest --env=prod --directory=/path/to/dir
 ```
 
 ## Using the pyoscar API

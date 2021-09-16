@@ -2,7 +2,7 @@
 #
 # Authors: Tom Kralidis <tomkralidis@gmail.com>
 #
-# Copyright (c) 2020 Tom Kralidis
+# Copyright (c) 2021 Tom Kralidis
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -35,6 +35,11 @@ OPTION_ENV = click.option(
     '--env', '-e', default='depl',
     type=click.Choice(['depl', 'prod']),
     help='OSCAR environment to run against (default=depl)')
+
+
+OPTION_LOG = click.option(
+    '--log', '-l', type=click.File('a', encoding='utf-8'),
+    help='Name of output file')
 
 OPTION_VERBOSITY = click.option(
     '--verbosity', '-v',
