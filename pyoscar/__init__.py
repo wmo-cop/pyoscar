@@ -209,12 +209,12 @@ class OSCARClient:
 
         LOGGER.debug(f'Searching stations for WIGOS ID: {identifier}')
         response = self.get_stations(wigos_id=identifier)
-        if not response:
+        if not response or response['totalCount'] == 0:
             msg = f'Station {identifier} not found'
             LOGGER.debug(msg)
             raise RuntimeError(msg)
 
-        identifier = str(response[0]['id'])
+        identifier = str(response['stationSearchResults'][0]['id'])
 
         LOGGER.debug(f'Fetching station report {identifier}')
         if format_ == 'XML':
