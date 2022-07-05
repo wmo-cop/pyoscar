@@ -440,7 +440,8 @@ def upload(ctx, api_token, env, xml, log, only_use_gml_ids=False,
         raise click.ClickException('--api-token/-at required')
 
     o = OSCARClient(api_token=api_token, env=env)
-    click.echo(f'Sending {xml} to OSCAR {env} environment ({o.url})')
+
+    click.echo(f'Sending {xml} to OSCAR {env} environment ({o.api_url})')
 
     with open(xml) as fh:
         data = fh.read()
