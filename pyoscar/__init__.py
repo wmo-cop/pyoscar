@@ -295,12 +295,13 @@ class OSCARClient:
         :returns: `dict` of result
         """
 
-        params = {
-            'useOnlyGmlIds': 'FALSE'
-        }
+        use_only_gml_ids_str = str(only_use_gml_ids).upper()
 
-        if isinstance(only_use_gml_ids, bool):
-            params['useOnlyGmlIds'] = str(only_use_gml_ids).upper()
+        LOGGER.debug(f'useOnlyGmlIds: {use_only_gml_ids_str}')
+
+        params = {
+            'useOnlyGmlIds': use_only_gml_ids_str
+        }
 
         url = f'{self.api_url}/wmd/upload'
 
