@@ -423,9 +423,8 @@ def stations(ctx, env, program=None, country=None, station_type=None,
 @cli_options.OPTION_VERBOSITY
 @click.option('--api-token', '-at', 'api_token', help='API token')
 @click.option('--xml', '-x', help='WMDR XML')
-@click.option('--only-use-gml-ids', '-g', is_flag=True, default=False,
-              help='use GML ids')
-def upload(ctx, api_token, env, xml, log, only_use_gml_ids=False,
+@click.option('--gml-ids/--no-gml-ids', default=True, help='use GML ids')
+def upload(ctx, api_token, env, xml, log, gml_ids=True,
            verbosity=None):
     """upload WMDR XML"""
 
@@ -447,7 +446,7 @@ def upload(ctx, api_token, env, xml, log, only_use_gml_ids=False,
     with open(xml) as fh:
         data = fh.read()
 
-    response = o.upload(data, only_use_gml_ids=only_use_gml_ids)
+    response = o.upload(data, only_use_gml_ids=gml_ids)
 
     response_str = json.dumps(response, indent=4)
 
