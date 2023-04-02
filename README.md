@@ -95,6 +95,9 @@ pyoscar upload -x /path/to/wmdr.xml -at API_TOKEN -e prod
 # upload WMDR XML (to production environment) and save results to file
 pyoscar upload -x /path/to/wmdr.xml -at API_TOKEN -e prod -l results.log
 
+# use only GML ids is TRUE by default; use --no-gml-ids to set to FALSE
+pyoscar upload -x /path/to/wmdr.xml -at API_TOKEN -e prod -l results.log --no-gml-ids
+
 # harvest all records
 pyoscar harvest --env=prod --directory=/path/to/dir
 ```
