@@ -2,7 +2,7 @@
 #
 # Authors: Tom Kralidis <tomkralidis@gmail.com>
 #
-# Copyright (c) 2021 Tom Kralidis
+# Copyright (c) 2023 Tom Kralidis
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -179,11 +179,11 @@ class OSCARClient:
         LOGGER.debug(f'Response: {response.status_code}')
 
         for c in response.json():
-            if country is not None and country == c['countryName']:
+            if country is not None and country.casefold() == c['countryName'].casefold():  # noqa:
                 ids.append(c['id'])
-            if surname is not None and surname == c['surname']:
+            if surname is not None and surname.casefold() == c.get('surname', c.get('surnameName')).casefold():  # noqa
                 ids.append(c['id'])
-            if organization is not None and organization == c['organization']:
+            if organization is not None and organization.casefold() == c['organization'].casefold():  # noqa
                 ids.append(c['id'])
 
         for id_ in ids:
