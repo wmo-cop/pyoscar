@@ -25,13 +25,13 @@ are automatically installed during pyoscar installation.
 To install the latest stable version:
 
 ```bash
-pip install pyoscar
+pip3 install pyoscar
 ```
 
 To keep up to date with stable updates:
 
 ```bash
-pip install pyoscar -U
+pip3 install pyoscar -U
 ```
 
 ### For developers
@@ -45,8 +45,8 @@ source bin/activate
 # clone codebase and install
 git clone https://github.com/wmo-cop/pyoscar.git
 cd pyoscar
-python setup.py build
-python setup.py install
+python3 setup.py build
+python3 setup.py install
 ```
 
 ## Running pyoscar via the Command Line
@@ -116,7 +116,7 @@ stations = client.get_stations(country='CAN')
 stations = client.get_stations(program='GAW')
 
 # get invididual station report
-stn_leo = client.get_station_report('LEO')
+stn_leo = client.get_station_report('0-20000-0-71758')
 
 
 # upload WMDR XML
@@ -139,14 +139,14 @@ response = client.upload(data)
 
 ```bash
 # install dev requirements
-pip install -r requirements-dev.txt
+pip3 install -r requirements-dev.txt
 
 # run tests like this:
 cd tests
-python run_tests.py
+python3 run_tests.py
 
 # or like this:
-python setup.py test
+python3 setup.py test
 
 # measure code coverage
 coverage run --source pyoscar setup.py test
@@ -156,7 +156,7 @@ coverage report -m
 ## Releasing
 
 ```bash
-python setup.py sdist bdist_wheel --universal
+python3 setup.py sdist bdist_wheel --universal
 twine upload dist/*
 ```
 

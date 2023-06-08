@@ -2,7 +2,7 @@
 #
 # Authors: Tom Kralidis <tomkralidis@gmail.com>
 #
-# Copyright (c) 2017 Tom Kralidis
+# Copyright (c) 2023 Tom Kralidis
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -106,10 +106,10 @@ setup(
         'oscar',
         'wigos',
         'station metadata',
-        'gawsis',
+        'gawsis'
     ]),
     author='Meteorological Service of Canada',
-    author_email='tom.kralidis@canada.ca',
+    author_email='tomkralidis@gmail.com',
     maintainer='Meteorological Service of Canada',
     maintainer_email='tomkralidis@gmail.com',
     url='https://github.com/wmo-cop/pyoscar',
