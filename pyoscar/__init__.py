@@ -196,15 +196,17 @@ class OSCARClient:
 
         return matches
 
-    def get_station_report(self, identifier: str,
-                           format_: str = 'JSON') -> Union[str, dict]:
+    def get_station_report(self, identifier: str, summary=False,
+                           format_: str = 'JSON') -> Union[dict, etree.Element]:  # noqa
         """
         get station information by WIGOS identifier
 
         :param identifier: identifier (WIGOS identifier)
+        :param summary: whether to provide a summary report (default `False`)
         :param format_: format (JSON [default] or XML)
 
-        :returns: `dict` or raw XML `str` of matching station report
+        :returns: `dict` of JSON payload or summary, or `etree.Element` of
+                  matching station report WMDR XML
         """
 
         LOGGER.debug(f'Searching stations for WIGOS ID: {identifier}')
@@ -230,9 +232,86 @@ class OSCARClient:
         response.raise_for_status()
 
         if format_ == 'XML':
-            return response.text
+            response = etree.fromstring(response.content)
         else:
-            return response.json()
+            response = response.json()
+
+        if summary:
+            LOGGER.debug('Generating report summary')
+            return self.get_station_report_summary(response)
+        else:
+            return response
+
+    def get_station_report_summary(self, station: Union[dict, etree.Element]) -> dict:  # noqa
+        """
+        Provide station summary report
+
+        :param station: `dict` of JSON or `etree.Element` of WMDR XML
+
+        :returns: `dict` of summary
+        """
+
+        summary = {}
+
+        if isinstance(station, dict):  # dict
+            summary['station_name'] = station['name']
+            summary['wigos_station_identifier'] = station['wigosIds'][0]['wid']
+            summary['facility_type'] = station['typeName']
+            summary['latitude'] = station['locations'][0]['latitude']
+            summary['longitude'] = station['locations'][0]['longitude']
+            summary['elevation'] = station['locations'][0].get('elevation')
+            summary['territory_name'] = station['territories'][0]['territoryName']  # noqa
+            summary['wmo_region'] = station['wmoRaId']
+
+        else:  # etree.Element
+            station_name = get_xpath(
+                station, '//wmdr:ObservingFacility/gml:name')
+
+            wigos_station_identifier = get_xpath(
+                station, '//wmdr:ObservingFacility/gml:identifier')
+
+            facility_type = get_xpath(
+                station, '//wmdr:ObservingFacility//wmdr:facilityType/@xlink:href').split('/')[-1]  # noqa
+
+            wmo_region = get_xpath(
+                station, '//wmdr:ObservingFacility//wmdr:wmoRegion/@xlink:href').split('/')[-1]  # noqa
+
+            territory_name = get_xpath(
+                station, '//wmdr:ObservingFacility//wmdr:territoryName/@xlink:href').split('/')[-1]  # noqa
+
+            summary['station_name'] = station_name
+            summary['wigos_station_identifier'] = wigos_station_identifier
+            summary['facility_type'] = facility_type
+            summary['wmo_region'] = wmo_region
+            summary['territory_name'] = territory_name
+
+            geometry = get_xpath(
+                station, '//wmdr:ObservingFacility//wmdr:geoLocation//gml:pos')
+            geometry = geometry.split()
+
+            if len(geometry) == 3:
+                LOGGER.debug('Using geometry from first observing facility')
+                summary['latitude'] = get_typed_value(geometry[0])
+                summary['longitude'] = get_typed_value(geometry[1])
+                summary['elevation'] = get_typed_value(geometry[2])
+            else:
+                LOGGER.debug('No elevation found; parsing deployment/equipments')  # noqa
+                geometries = get_xpath(
+                    station, '//wmdr:Process//wmdr:Deployment//wmdr:Equipment//wmdr:geoLocation//gml:pos', first=False)  # noqa
+
+                for de in geometries:
+                    geometry = de.text.split()
+
+                    summary['latitude'] = get_typed_value(geometry[0])
+                    summary['longitude'] = get_typed_value(geometry[1])
+                    summary['elevation'] = None
+
+                    if len(geometry) == 3:
+                        LOGGER.debug('Elevation found')
+                        summary['elevation'] = get_typed_value(geometry[2])
+                        break
+
+        return summary
 
     def harvest_records(self,
                         date_from: date = None) -> Generator[list, None, None]:
@@ -265,7 +344,7 @@ class OSCARClient:
             LOGGER.debug(f'Request: {response.url}')
             LOGGER.debug(f'Response: {response.status_code}')
 
-            xml = etree.fromstring(response.text.encode('utf-8'))
+            xml = etree.fromstring(response.text).getroot()
             LOGGER.debug(f'Raw XML response:\n{response.text}')
             element = f'{{{oai_ns}}}ListRecords/{{{oai_ns}}}resumptionToken'
             rt = xml.find(element)
@@ -321,6 +400,61 @@ class OSCARClient:
         return response.json()
 
 
+def get_xpath(element: etree.Element, xpath: str,
+              first: bool = True) -> Union[str, list]:
+    """
+    Helper function to retrieve a given XPath fron a WMDR document.
+
+    :param element: `etree.Element` of WMDR XML
+    :param xpath: `str` of valid W3C XPath expression
+    :param first: `bool` of whether to return all matches (default `True`)
+
+    :returns: value of matching XPath(s)
+    """
+
+    namespaces = {
+        'wmdr': 'http://def.wmo.int/wmdr/2017',
+        'gml': 'http://www.opengis.net/gml/3.2',
+        'xlink': 'http://www.w3.org/1999/xlink'
+    }
+
+    value = element.xpath(xpath, namespaces=namespaces)
+
+    if not first:
+        LOGGER.debug('Returning all matching nodes')
+        return value
+
+    LOGGER.debug('Returning first matching node')
+    value = value[0]
+
+    if isinstance(value, str):
+        return value
+    else:
+        return value.text
+
+
+def get_typed_value(value) -> Union[float, int, str]:
+    """
+    Derive true type from data value
+
+    :param value: value
+
+    :returns: value as a native Python data type
+    """
+
+    try:
+        if '.' in value:  # float?
+            value2 = float(value)
+        elif len(value) > 1 and value.startswith('0'):
+            value2 = value
+        else:  # int?
+            value2 = int(value)
+    except ValueError:  # string (default)?
+        value2 = value
+
+    return value2
+
+
 class RequestError(Exception):
     """class exception stub"""
     pass
@@ -365,9 +499,12 @@ def contact(ctx, env, country=None, surname=None, organization=None,
 @cli_options.OPTION_ENV
 @cli_options.OPTION_VERBOSITY
 @click.option('--identifier', '-i', help='identifier (WIGOS identifier)')
+@click.option('--summary', '-s', 'summary', is_flag=True, default=False,
+              help='Provide summary report')
 @click.option('--format', '-f', 'format_', type=click.Choice(['JSON', 'XML']),
               default='JSON', help='Format')
-def station(ctx, env, identifier, format_='JSON', verbosity=None):
+def station(ctx, env, identifier, summary=False, format_='JSON',
+            verbosity=None):
     """get station report"""
 
     if identifier is None:
@@ -382,11 +519,17 @@ def station(ctx, env, identifier, format_='JSON', verbosity=None):
     o = OSCARClient(env=env)
 
     try:
-        response = o.get_station_report(identifier, format_)
+        response = o.get_station_report(identifier, summary, format_)
     except RuntimeError as err:
         raise click.ClickException(err)
 
-    if format_ == 'JSON':
+    if summary:
+        click.echo(json.dumps(response, indent=4))
+        return
+
+    if format_ == 'XML':
+        response = etree.tostring(response, pretty_print=1)
+    else:
         response = json.dumps(response, indent=4)
 
     click.echo(response)

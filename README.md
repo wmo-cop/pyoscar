@@ -74,8 +74,14 @@ pyoscar stations --program=GAW
 # get a single station by WIGOS identifier
 pyoscar station --identifier 0-20000-0-71151
 
+# get a single station by WIGOS identifier in summary mode
+pyoscar station --identifier 0-20000-0-71151 --summary
+
 # get a single station by WIGOS identifier in WIGOS XML format
 pyoscar station --identifier 0-20000-0-71151 --format=XML
+
+# get a single station by WIGOS identifier in WIGOS XML format in summary mode
+pyoscar station --identifier 0-20000-0-71151 --format=XML --summary
 
 # add verbose mode (ERROR, WARNING, INFO, DEBUG)
 pyoscar station --identifier 0-20000-0-71151 --verbosity=DEBUG
@@ -118,6 +124,8 @@ stations = client.get_stations(program='GAW')
 # get invididual station report
 stn_leo = client.get_station_report('0-20000-0-71758')
 
+# get invididual station report in summary mode
+stn_leo = client.get_station_report('0-20000-0-71758', summary=True)
 
 # upload WMDR XML
 

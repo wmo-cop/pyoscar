@@ -1,7 +1,7 @@
 ###############################################################################
 #
 # The MIT License (MIT)
-# Copyright (c) 2018 Tom Kralidis
+# Copyright (c) 2023 Tom Kralidis
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to
@@ -28,7 +28,9 @@ import io
 import os
 import unittest
 
-from pyoscar import OSCARClient
+from lxml import etree
+
+from pyoscar import OSCARClient, get_typed_value, get_xpath
 
 try:
     from unittest import mock
@@ -104,6 +106,28 @@ class OSCARTest(unittest.TestCase):
             self.assertIsInstance(station, dict)
             self.assertEqual(len(station), 0)
 
+    def test_get_station_report_summary(self):
+        """test single station report in summary mode"""
+
+        o = OSCARClient()
+
+        data_xml = etree.parse(get_abspath('test.station.xml'))
+
+        summary = o.get_station_report_summary(data_xml)
+
+        keys = [
+            'elevation',
+            'facility_type',
+            'latitude',
+            'longitude',
+            'station_name',
+            'territory_name',
+            'wigos_station_identifier',
+            'wmo_region'
+        ]
+
+        self.assertEqual(sorted(summary.keys()), keys)
+
     @patch('pyoscar.requests.post')
     def test_upload(self, mock_post):
         """test upload"""
@@ -134,6 +158,43 @@ class OSCARTest(unittest.TestCase):
         result = o.upload('<foo/>')
         self.assertIsInstance(result, dict)
         self.assertEqual(result['code'], 401)
+
+    def test_get_xpath(self):
+        """test get_xpath"""
+
+        data = '''<root>
+            <person department="monitoring">
+                <firstname>John</firstname>
+                <lastname>A</lastname>
+            </person>
+            <person department="prediction">
+                <firstname>Bob</firstname>
+                <lastname>B</lastname>
+            </person>
+        </root>
+        '''
+
+        data = etree.fromstring(data)
+
+        person1 = get_xpath(data, '//person/firstname')
+        self.assertIsInstance(person1, str)
+        self.assertEqual(person1, 'John')
+
+        person1_department = get_xpath(data, '//person/@department')
+        self.assertIsInstance(person1_department, str)
+        self.assertEqual(person1_department, 'monitoring')
+
+        persons = get_xpath(data, '//person/firstname', first=False)
+        self.assertIsInstance(persons, list)
+        self.assertEqual(len(persons), 2)
+
+    def test_get_typed_value(self):
+        """test get_typed_value"""
+
+        self.assertIsInstance(get_typed_value('1'), int)
+        self.assertIsInstance(get_typed_value('1.2'), float)
+        self.assertIsInstance(get_typed_value('1.2.0'), str)
+        self.assertIsInstance(get_typed_value('foo'), str)
 
 
 def get_abspath(filepath):
