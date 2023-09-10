@@ -44,20 +44,20 @@ from pyoscar import cli_options
 
 LOGGER = logging.getLogger(__name__)
 
-FACILITY_TYPE_LOOKUP = [
-    'seaMobile',
-    'underwaterFixed',
-    'underwaterMobile',
-    'airMobile',
-    'lakeRiverMobile',
-    'seaOnIce',
-    'landMobile',
-    'landFixed',
-    'lakeRiverFixed',
-    'seaFixed',
-    'airFixed',
-    'landOnIce'
-]
+FACILITY_TYPE_LOOKUP = {
+    'seaMobile': 'Sea (mobile)',
+    'underwaterFixed': 'Underwater (fixed)',
+    'underwaterMobile': 'Underwater (mobile)',
+    'airMobile': 'Air (mobile)',
+    'lakeRiverMobile': 'Lake/River (mobile)',
+    'seaOnIce': 'Sea (on ice)',
+    'landMobile': 'Land (mobile)',
+    'landFixed': 'Land (fixed)',
+    'lakeRiverFixed': 'Lake/River (fixed)',
+    'seaFixed': 'Sea (fixed)',
+    'airFixed': 'Air (fixed)',
+    'landOnIce': 'Land (on ice)'
+}
 
 
 class OSCARClient:
@@ -256,7 +256,7 @@ class OSCARClient:
         if isinstance(station, dict):  # dict
             summary['station_name'] = station['name']
             summary['wigos_station_identifier'] = station['wigosIds'][0]['wid']
-            summary['facility_type'] = station['typeName']
+            summary['facility_type'] = FACILITY_TYPE_LOOKUP[station['typeName']]  # noqa
             summary['latitude'] = station['locations'][0]['latitude']
             summary['longitude'] = station['locations'][0]['longitude']
             summary['elevation'] = station['locations'][0].get('elevation')
@@ -271,33 +271,53 @@ class OSCARClient:
                 station, '//wmdr:ObservingFacility/gml:identifier')
 
             facility_type = get_xpath(
-                station, '//wmdr:ObservingFacility//wmdr:facilityType/@xlink:href').split('/')[-1]  # noqa
+                station, '//wmdr:ObservingFacility//wmdr:facilityType/@xlink:href')  # noqa
+
+            if not facility_type:
+                facility_type = None
+            else:
+                facility_type = facility_type.split('/')[-1]
 
             wmo_region = get_xpath(
-                station, '//wmdr:ObservingFacility//wmdr:wmoRegion/@xlink:href').split('/')[-1]  # noqa
+                station, '//wmdr:ObservingFacility//wmdr:wmoRegion/@xlink:href')  # noqa
+
+            if not wmo_region:
+                wmo_region = None
+            else:
+                wmo_region = wmo_region.split('/')[-1]
 
             territory_name = get_xpath(
-                station, '//wmdr:ObservingFacility//wmdr:territoryName/@xlink:href').split('/')[-1]  # noqa
+                station, '//wmdr:ObservingFacility//wmdr:territoryName/@xlink:href')  # noqa
+
+            if not territory_name:
+                territory_name = None
+            else:
+                territory_name = territory_name.split('/')[-1]
 
             summary['station_name'] = station_name
             summary['wigos_station_identifier'] = wigos_station_identifier
-            summary['facility_type'] = facility_type
+            summary['facility_type'] = FACILITY_TYPE_LOOKUP[facility_type]
             summary['wmo_region'] = wmo_region
             summary['territory_name'] = territory_name
 
             geometry = get_xpath(
                 station, '//wmdr:ObservingFacility//wmdr:geoLocation//gml:pos')
-            geometry = geometry.split()
 
-            if len(geometry) == 3:
+            if geometry is None:
+                LOGGER.debug('No facility geometry found')
+            if geometry is not None and len(geometry) == 3:
                 LOGGER.debug('Using geometry from first observing facility')
+                geometry = geometry.split()
                 summary['latitude'] = get_typed_value(geometry[0])
                 summary['longitude'] = get_typed_value(geometry[1])
                 summary['elevation'] = get_typed_value(geometry[2])
             else:
-                LOGGER.debug('No elevation found; parsing deployment/equipments')  # noqa
+                LOGGER.debug('No elevation found; parsing deployment/equipment')  # noqa
                 geometries = get_xpath(
                     station, '//wmdr:Process//wmdr:Deployment//wmdr:Equipment//wmdr:geoLocation//gml:pos', first=False)  # noqa
+
+                if not geometries:
+                    LOGGER.debug('No deployment/equipment geometries found')
 
                 for de in geometries:
                     geometry = de.text.split()
@@ -418,11 +438,18 @@ def get_xpath(element: etree.Element, xpath: str,
         'xlink': 'http://www.w3.org/1999/xlink'
     }
 
+    LOGGER.debug(f'Searching for xpath {xpath}')
     value = element.xpath(xpath, namespaces=namespaces)
 
     if not first:
         LOGGER.debug('Returning all matching nodes')
         return value
+
+    LOGGER.debug(f'Value: {value}')
+
+    if len(value) == 0:
+        LOGGER.debug('No matches')
+        return None
 
     LOGGER.debug('Returning first matching node')
     value = value[0]
@@ -542,7 +569,7 @@ def station(ctx, env, identifier, summary=False, format_='JSON',
 @cli_options.OPTION_VERBOSITY
 @click.option('--program', '-p', help='Program Affiliation')
 @click.option('--station-type', '-st', help='Station type',
-              type=click.Choice(FACILITY_TYPE_LOOKUP))
+              type=click.Choice(FACILITY_TYPE_LOOKUP.keys()))
 def stations(ctx, env, program=None, country=None, station_type=None,
              verbosity=None):
     """get list of OSCAR stations"""
