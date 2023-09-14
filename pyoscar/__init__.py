@@ -256,7 +256,7 @@ class OSCARClient:
         if isinstance(station, dict):  # dict
             summary['station_name'] = station['name']
             summary['wigos_station_identifier'] = station['wigosIds'][0]['wid']
-            summary['facility_type'] = FACILITY_TYPE_LOOKUP[station['typeName']]  # noqa
+            summary['facility_type'] = station['typeName']
             summary['barometer_height'] = None
             summary['latitude'] = station['locations'][0]['latitude']
             summary['longitude'] = station['locations'][0]['longitude']
