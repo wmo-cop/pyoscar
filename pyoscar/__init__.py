@@ -320,8 +320,11 @@ class OSCARClient:
             xpath = '//wmdr:Process//wmdr:Deployment//wmdr:Equipment[gml:identifier/@codeSpace="http://codes.wmo.int/wmdr/ObservedVariableAtmosphere/216"]//wmdr:geoLocation//gml:pos'  # noqa
 
             barometer_height = get_xpath(station, xpath)
-            summary['barometer_height'] = get_typed_value(
-                barometer_height.split()[-1])
+            if barometer_height is not None:
+                summary['barometer_height'] = get_typed_value(
+                    barometer_height.split()[-1])
+            else:
+                summary['barometer_height'] = barometer_height
 
         return summary
 
