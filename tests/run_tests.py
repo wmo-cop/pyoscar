@@ -116,6 +116,7 @@ class OSCARTest(unittest.TestCase):
         summary = o.get_station_report_summary(data_xml)
 
         keys = [
+            'barometer_height',
             'elevation',
             'facility_type',
             'latitude',

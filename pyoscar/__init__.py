@@ -257,6 +257,7 @@ class OSCARClient:
             summary['station_name'] = station['name']
             summary['wigos_station_identifier'] = station['wigosIds'][0]['wid']
             summary['facility_type'] = FACILITY_TYPE_LOOKUP[station['typeName']]  # noqa
+            summary['barometer_height'] = None
             summary['latitude'] = station['locations'][0]['latitude']
             summary['longitude'] = station['locations'][0]['longitude']
             summary['elevation'] = station['locations'][0].get('elevation')
@@ -305,31 +306,22 @@ class OSCARClient:
 
             if geometry is None:
                 LOGGER.debug('No facility geometry found')
+
+            geometry = geometry.split()
+            summary['latitude'] = get_typed_value(geometry[0])
+            summary['longitude'] = get_typed_value(geometry[1])
+
             if geometry is not None and len(geometry) == 3:
-                LOGGER.debug('Using geometry from first observing facility')
-                geometry = geometry.split()
-                summary['latitude'] = get_typed_value(geometry[0])
-                summary['longitude'] = get_typed_value(geometry[1])
+                LOGGER.debug('Found elevation')
                 summary['elevation'] = get_typed_value(geometry[2])
             else:
-                LOGGER.debug('No elevation found; parsing deployment/equipment')  # noqa
-                geometries = get_xpath(
-                    station, '//wmdr:Process//wmdr:Deployment//wmdr:Equipment//wmdr:geoLocation//gml:pos', first=False)  # noqa
+                summary['elevation'] = None
 
-                if not geometries:
-                    LOGGER.debug('No deployment/equipment geometries found')
+            xpath = '//wmdr:Process//wmdr:Deployment//wmdr:Equipment[gml:identifier/@codeSpace="http://codes.wmo.int/wmdr/ObservedVariableAtmosphere/216"]//wmdr:geoLocation//gml:pos'  # noqa
 
-                for de in geometries:
-                    geometry = de.text.split()
-
-                    summary['latitude'] = get_typed_value(geometry[0])
-                    summary['longitude'] = get_typed_value(geometry[1])
-                    summary['elevation'] = None
-
-                    if len(geometry) == 3:
-                        LOGGER.debug('Elevation found')
-                        summary['elevation'] = get_typed_value(geometry[2])
-                        break
+            barometer_height = get_xpath(station, xpath)
+            summary['barometer_height'] = get_typed_value(
+                barometer_height.split()[-1])
 
         return summary
 
