@@ -257,10 +257,10 @@ class OSCARClient:
             summary['station_name'] = station['name']
             summary['wigos_station_identifier'] = station['wigosIds'][0]['wid']
             summary['facility_type'] = station['typeName']
-            summary['barometer_height'] = None
             summary['latitude'] = station['locations'][0]['latitude']
             summary['longitude'] = station['locations'][0]['longitude']
             summary['elevation'] = station['locations'][0].get('elevation')
+            summary['barometer_height'] = None
             summary['territory_name'] = station['territories'][0]['territoryName']  # noqa
             summary['wmo_region'] = station['wmoRaId']
 
@@ -269,7 +269,7 @@ class OSCARClient:
                 station, '//wmdr:ObservingFacility/gml:name')
 
             wigos_station_identifier = get_xpath(
-                station, '//wmdr:ObservingFacility/gml:identifier')
+                station, '//wmdr:ObservingFacility/gml:identifier').split(',')[0]
 
             facility_type = get_xpath(
                 station, '//wmdr:ObservingFacility//wmdr:facilityType/@xlink:href')  # noqa
