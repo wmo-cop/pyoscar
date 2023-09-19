@@ -269,7 +269,7 @@ class OSCARClient:
                 station, '//wmdr:ObservingFacility/gml:name')
 
             wigos_station_identifier = get_xpath(
-                station, '//wmdr:ObservingFacility/gml:identifier').split(',')[0]
+                station, '//wmdr:ObservingFacility/gml:identifier').split(',')[0]  # noqa
 
             facility_type = get_xpath(
                 station, '//wmdr:ObservingFacility//wmdr:facilityType/@xlink:href')  # noqa
