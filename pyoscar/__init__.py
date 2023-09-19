@@ -520,7 +520,7 @@ def contact(ctx, env, country=None, surname=None, organization=None,
 @click.pass_context
 @cli_options.OPTION_ENV
 @cli_options.OPTION_VERBOSITY
-@click.option('--identifier', '-i', help='identifier (WIGOS identifier)')
+@click.argument('identifier')
 @click.option('--summary', '-s', 'summary', is_flag=True, default=False,
               help='Provide summary report')
 @click.option('--format', '-f', 'format_', type=click.Choice(['JSON', 'XML']),
