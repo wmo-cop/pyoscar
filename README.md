@@ -72,19 +72,19 @@ pyoscar stations --country=CAN
 pyoscar stations --program=GAW
 
 # get a single station by WIGOS identifier
-pyoscar station --identifier 0-20000-0-71151
+pyoscar station 0-20000-0-71151
 
 # get a single station by WIGOS identifier in summary mode
-pyoscar station --identifier 0-20000-0-71151 --summary
+pyoscar station 0-20000-0-71151 --summary
 
 # get a single station by WIGOS identifier in WIGOS XML format
-pyoscar station --identifier 0-20000-0-71151 --format=XML
+pyoscar station 0-20000-0-71151 --format=XML
 
 # get a single station by WIGOS identifier in WIGOS XML format in summary mode
-pyoscar station --identifier 0-20000-0-71151 --format=XML --summary
+pyoscar station 0-20000-0-71151 --format=XML --summary
 
 # add verbose mode (ERROR, WARNING, INFO, DEBUG)
-pyoscar station --identifier 0-20000-0-71151 --verbosity=DEBUG
+pyoscar station 0-20000-0-71151 --verbosity=DEBUG
 
 # get contact by country
 pyoscar contact -c Canada
@@ -161,12 +161,24 @@ coverage run --source pyoscar setup.py test
 coverage report -m
 ```
 
-## Releasing
+# create release (x.y.z is the release version)
+vi pyoscar/__init__.py  # update __version__
+git commit -am 'update release version x.y.z'
+git push origin master
+git tag -a x.y.z -m 'tagging release version x.y.z'
+git push --tags
 
-```bash
+# upload to PyPI
+rm -fr build dist *.egg-info
 python3 setup.py sdist bdist_wheel --universal
 twine upload dist/*
-```
+
+# publish release on GitHub (https://github.com/wmo-cop/pyoscar/releases/new)
+
+# bump version back to dev
+vi pyoscar/__init__.py  # update __version__
+git commit -am 'back to dev'
+git push origin master
 
 ### Code Conventions
 
