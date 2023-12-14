@@ -161,7 +161,9 @@ coverage run --source pyoscar setup.py test
 coverage report -m
 ```
 
-# create release (x.y.z is the release version)
+# Releasing
+```bash
+create release (x.y.z is the release version)
 vi pyoscar/__init__.py  # update __version__
 git commit -am 'update release version x.y.z'
 git push origin master
@@ -179,6 +181,7 @@ twine upload dist/*
 vi pyoscar/__init__.py  # update __version__
 git commit -am 'back to dev'
 git push origin master
+```
 
 ### Code Conventions
 
