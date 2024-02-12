@@ -44,21 +44,6 @@ from pyoscar import cli_options
 
 LOGGER = logging.getLogger(__name__)
 
-FACILITY_TYPE_LOOKUP = {
-    'seaMobile': 'Sea (mobile)',
-    'underwaterFixed': 'Underwater (fixed)',
-    'underwaterMobile': 'Underwater (mobile)',
-    'airMobile': 'Air (mobile)',
-    'lakeRiverMobile': 'Lake/River (mobile)',
-    'seaOnIce': 'Sea (on ice)',
-    'landMobile': 'Land (mobile)',
-    'landFixed': 'Land (fixed)',
-    'lakeRiverFixed': 'Lake/River (fixed)',
-    'seaFixed': 'Sea (fixed)',
-    'airFixed': 'Air (fixed)',
-    'landOnIce': 'Land (on ice)'
-}
-
 
 class OSCARClient:
     """OSCAR client API"""
@@ -148,7 +133,7 @@ class OSCARClient:
                 params['territoryName'] = country
             if station_type is not None:
                 LOGGER.debug(f'Station type: {station_type}')
-                params['facilityType'] = FACILITY_TYPE_LOOKUP[station_type]
+                params['facilityType'] = station_type
 
         response = requests.get(request, headers=self.headers, params=params)
         LOGGER.debug(f'Request: {response.url}')
@@ -297,7 +282,7 @@ class OSCARClient:
 
             summary['station_name'] = station_name
             summary['wigos_station_identifier'] = wigos_station_identifier
-            summary['facility_type'] = FACILITY_TYPE_LOOKUP[facility_type]
+            summary['facility_type'] = facility_type
             summary['wmo_region'] = wmo_region
             summary['territory_name'] = territory_name
 
@@ -563,8 +548,7 @@ def station(ctx, env, identifier, summary=False, format_='JSON',
 @cli_options.OPTION_ENV
 @cli_options.OPTION_VERBOSITY
 @click.option('--program', '-p', help='Program Affiliation')
-@click.option('--station-type', '-st', help='Station type',
-              type=click.Choice(FACILITY_TYPE_LOOKUP.keys()))
+@click.option('--station-type', '-st', help='Station type')
 def stations(ctx, env, program=None, country=None, station_type=None,
              verbosity=None):
     """get list of OSCAR stations"""
