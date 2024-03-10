@@ -194,20 +194,20 @@ class OSCARClient:
                   matching station report WMDR XML
         """
 
-        LOGGER.debug(f'Searching stations for WIGOS ID: {identifier}')
-        response = self.get_stations(wigos_id=identifier)
-        if not response or response['totalCount'] == 0:
-            msg = f'Station {identifier} not found'
-            LOGGER.debug(msg)
-            raise RuntimeError(msg)
-
-        identifier = str(response['stationSearchResults'][0]['id'])
-
-        LOGGER.debug(f'Fetching station report {identifier}')
         if format_ == 'XML':
             LOGGER.debug('Trying WIGOS XML download')
-            request = f'{self.api_url}/wmd/download/{identifier}'
+            request = f'{self.harvest_url}?verb=GetRecord&metadataPrefix=wmdr&identifier={identifier}'  # noqa
         else:
+            LOGGER.debug(f'Searching stations for WIGOS ID: {identifier}')
+            response = self.get_stations(wigos_id=identifier)
+            if not response or response['totalCount'] == 0:
+                msg = f'Station {identifier} not found'
+                LOGGER.debug(msg)
+                raise RuntimeError(msg)
+
+            identifier = str(response['stationSearchResults'][0]['id'])
+
+            LOGGER.debug(f'Fetching station report {identifier}')
             request = f'{self.api_url}/stations/station/{identifier}/stationReport'  # noqa
 
         response = requests.get(request, headers=self.headers)
