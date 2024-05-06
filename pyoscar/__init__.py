@@ -27,7 +27,7 @@
 #
 # =================================================================
 
-__version__ = '0.7.0'
+__version__ = '0.8.dev0'
 
 from datetime import date
 import json
