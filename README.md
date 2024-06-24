@@ -8,6 +8,9 @@ Pythonic API to WMO OSCAR
 
 pyoscar provides a Pythonic API atop the WMO [OSCAR](https://oscar.wmo.int/surface/index.html) HTTP API.
 
+## For R enthusiasts
+
+For those interested in using R, the [oscarr](https://github.com/oousmane/oscarr) project provides an R wrapper to the pyoscar Python module for the R community.
 # Installation
 
 ## Requirements
