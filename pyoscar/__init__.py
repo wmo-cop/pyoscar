@@ -48,7 +48,7 @@ LOGGER = logging.getLogger(__name__)
 class OSCARClient:
     """OSCAR client API"""
 
-    def __init__(self, env: str = 'depl', api_token: str = None,
+    def __init__(self, env: str = 'prod', api_token: str = None,
                  timeout: int = 30):
         """
         Initialize an OSCAR Client.
@@ -57,7 +57,7 @@ class OSCARClient:
         """
 
         self.env = env
-        """OSCAR environment (depl or prod)"""
+        """OSCAR environment (prod or depl)"""
 
         self.api_url = None
         """URL to OSCAR API"""
@@ -81,11 +81,12 @@ class OSCARClient:
 
         LOGGER.debug('Setting URL')
         if self.env == 'prod':
-            self.api_url = 'https://oscar.wmo.int/surface/rest/api'
-            self.harvest_url = 'https://oscar.wmo.int/oai/provider'
+            host = 'oscar.wmo.int'
         else:
-            self.api_url = 'https://oscardepl.wmo.int/surface/rest/api'
-            self.harvest_url = 'https://oscardepl.wmo.int/oai/provider'
+            host = 'oscardepl.wmo.int'
+
+        self.api_url = f'https://{host}/surface/rest/api'
+        self.harvest_url = f'https://{host}/oai/provider'
 
         if self.api_token is not None:
             self.headers['X-WMO-WMDR-Token'] = self.api_token
@@ -250,6 +251,11 @@ class OSCARClient:
             summary['wmo_region'] = station['wmoRaId']
 
         else:  # etree.Element
+            error = get_xpath(station, '//oai:error')
+            if error is not None:
+                LOGGER.warning(error)
+                return {}
+
             station_name = get_xpath(
                 station, '//wmdr:ObservingFacility/gml:name')
 
@@ -415,6 +421,7 @@ def get_xpath(element: etree.Element, xpath: str,
     namespaces = {
         'wmdr': 'http://def.wmo.int/wmdr/2017',
         'gml': 'http://www.opengis.net/gml/3.2',
+        'oai': 'http://www.openarchives.org/OAI/2.0/',
         'xlink': 'http://www.w3.org/1999/xlink'
     }
 
