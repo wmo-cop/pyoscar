@@ -92,7 +92,8 @@ class OSCARClient:
             self.headers['X-WMO-WMDR-Token'] = self.api_token
 
     def get_stations(self, program: str = None, country: str = None,
-                     station_type: str = None, wigos_id: str = None) -> list:
+                     station_name: str = None, station_type: str = None,
+                     wigos_id: str = None) -> list:
         """
         get all stations
 
@@ -111,6 +112,7 @@ class OSCARClient:
                              - seaFixed
                              - airFixed
                              - landOnIce
+        :param station_name: station name
         :param wigos_id: WIGOS identifier
 
         :returns: `list` of all matching stations
@@ -125,6 +127,9 @@ class OSCARClient:
         if wigos_id is not None:
             LOGGER.debug(f'WIGOS ID: {wigos_id}')
             params['wigosId'] = wigos_id
+        elif station_name is not None:
+            request = f'{self.api_url}/stations/approvedStations/names'
+            params['q'] = station_name
         else:
             if program is not None:
                 LOGGER.debug(f'Program: {program}')
@@ -555,9 +560,10 @@ def station(ctx, env, identifier, summary=False, format_='JSON',
 @cli_options.OPTION_ENV
 @cli_options.OPTION_VERBOSITY
 @click.option('--program', '-p', help='Program Affiliation')
+@click.option('--station-name', '-sn', help='Station name')
 @click.option('--station-type', '-st', help='Station type')
-def stations(ctx, env, program=None, country=None, station_type=None,
-             verbosity=None):
+def stations(ctx, env, program=None, country=None, station_name=None,
+             station_type=None, verbosity=None):
     """get list of OSCAR stations"""
 
     if verbosity is not None:
@@ -566,7 +572,8 @@ def stations(ctx, env, program=None, country=None, station_type=None,
         logging.getLogger(__name__).addHandler(logging.NullHandler())
 
     o = OSCARClient(env=env)
-    matching_stations = o.get_stations(program=program, country=country)
+    matching_stations = o.get_stations(station_name=station_name,
+                                       program=program, country=country)
 
     result = json.dumps(matching_stations, indent=4)
     click.echo(f'Number of stations: {len(matching_stations)}\nStations:\n{result}')  # noqa

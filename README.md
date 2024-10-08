@@ -74,6 +74,9 @@ pyoscar stations --country=CAN
 # get all station identifiers by program affiliation
 pyoscar stations --program=GAW
 
+# get all stations by station name (partial names are supported)
+pyoscar stations --station-name toronto
+
 # get a single station by WIGOS identifier
 pyoscar station 0-20000-0-71151
 
