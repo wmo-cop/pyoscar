@@ -145,6 +145,8 @@ class OSCARClient:
         LOGGER.debug(f'Request: {response.url}')
         LOGGER.debug(f'Response: {response.status_code}')
 
+        response.raise_for_status()
+
         return response.json()
 
     def get_contact(self, country: str, surname: str,
