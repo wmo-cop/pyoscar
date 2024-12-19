@@ -220,16 +220,31 @@ class OSCARClient:
         LOGGER.debug(f'Request: {response.url}')
         LOGGER.debug(f'Response: {response.status_code}')
 
+        if "error" in str(response.content) or 'status="deleted"' in str(response.content):
+            # WSI not found via OAPI route, note this only works for primary WSI
+            # Try REST API, note this is much slower
+            LOGGER.warning(f"Falling back to REST API for {identifier}")
+            request = f"https://oscar.wmo.int/surface/rest/api/wmd/download/{identifier}"
+            response = requests.get(request, headers=self.headers)
+            if response.status_code == 404:
+                return {}
+
         response.raise_for_status()
 
         if format_ == 'XML':
-            response = etree.fromstring(response.content)
+            try:
+                response = etree.fromstring(response.content)
+            except Exception as e:
+                raise e
         else:
             response = response.json()
 
         if summary:
             LOGGER.debug('Generating report summary')
-            return self.get_station_report_summary(response)
+            try:
+                return self.get_station_report_summary(response)
+            except Exception as e:
+                raise e
         else:
             return response
 
