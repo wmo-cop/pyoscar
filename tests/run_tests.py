@@ -84,7 +84,9 @@ class OSCARTest(unittest.TestCase):
 
         fake_responses = [mock.Mock(), mock.Mock()]
         fake_responses[0].json.return_value = sel0
+        fake_responses[0].text = str(sel0)
         fake_responses[1].json.return_value = sel1
+        fake_responses[1].text = str(sel1)
 
         mock_get.side_effect = fake_responses
 

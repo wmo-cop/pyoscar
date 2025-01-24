@@ -223,8 +223,8 @@ class OSCARClient:
         if any(s in response.text for s in ['error', 'deleted']):
             # noqa WSI not found via OAPI route, note this only works for primary WSI
             # Try REST API, note this is much slower
-            LOGGER.warning(f"Falling back to REST API for {identifier}")
-            request = f"{self.api_url}/wmd/download/{identifier}"  # noqa
+            LOGGER.warning(f'Falling back to {self.api_url} for {identifier}')
+            request = f'{self.api_url}/wmd/download/{identifier}'
             response = requests.get(request, headers=self.headers)
             if response.status_code == 404:
                 return {}
