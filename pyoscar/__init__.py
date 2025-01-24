@@ -224,7 +224,7 @@ class OSCARClient:
             # noqa WSI not found via OAPI route, note this only works for primary WSI
             # Try REST API, note this is much slower
             LOGGER.warning(f"Falling back to REST API for {identifier}")
-            request = f"https://oscar.wmo.int/surface/rest/api/wmd/download/{identifier}"  # noqa
+            request = f"{self.api_url}/wmd/download/{identifier}"  # noqa
             response = requests.get(request, headers=self.headers)
             if response.status_code == 404:
                 return {}
