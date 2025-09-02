@@ -372,7 +372,7 @@ class OSCARClient:
             LOGGER.debug(f'Request: {response.url}')
             LOGGER.debug(f'Response: {response.status_code}')
 
-            xml = etree.fromstring(response.text).getroot()
+            xml = etree.fromstring(response.content)
             LOGGER.debug(f'Raw XML response:\n{response.text}')
             element = f'{{{oai_ns}}}ListRecords/{{{oai_ns}}}resumptionToken'
             rt = xml.find(element)
