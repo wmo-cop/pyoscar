@@ -4,32 +4,24 @@ on: [ push, pull_request ]
 
 jobs:
   main:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
-        python-version: ['3.10']
+        python-version: ['3.12']
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@master
+    - uses: actions/setup-python@v6
       name: Setup Python ${{ matrix.python-version }}
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install system dependencies 📦
-      run: sudo apt-get install -y devscripts fakeroot debhelper python3-all python3-setuptools
-    - name: Install requirements 📦
+    - name: Install package and dev requirements 📦
       run: |
-        python3 -m pip install --upgrade pip
-        pip3 install coveralls
-        pip3 install -r requirements-dev.txt
-    - name: Install package 📦
-      run: python3 setup.py install
+        pip3 install .
+        pip3 install ".[dev]"
+        pip3 install ".[release]"
     - name: run tests ⚙️
-      run: python3 setup.py test
-    - name: run test coverage ⚙️
-      run: |
-        coverage run --source=pyoscar -m unittest tests.run_tests
-        coverage report -m
+      run: python3 tests/run_tests.py
     - name: run flake8 ⚙️
       run: flake8
     - name: build Python package 🏗️
-      run: python3 setup.py sdist bdist_wheel --universal
+      run: python3 -m build
