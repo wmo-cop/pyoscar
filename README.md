@@ -11,6 +11,7 @@ pyoscar provides a Pythonic API atop the WMO [OSCAR](https://oscar.wmo.int/surfa
 ## For R enthusiasts
 
 For those interested in using R, the [oscarr](https://github.com/oousmane/oscarr) project provides an R wrapper to the pyoscar Python module for the R community.
+
 # Installation
 
 ## Requirements
@@ -18,7 +19,7 @@ For those interested in using R, the [oscarr](https://github.com/oousmane/oscarr
 - [virtualenv](https://virtualenv.pypa.io/) or [Conda](https://docs.conda.io)
 
 ### Dependencies
-Dependencies are listed in [requirements.txt](requirements.txt). Dependencies
+Dependencies are listed in [pyproject.toml](pyproject.toml). Dependencies
 are automatically installed during pyoscar installation.
 
 ## Installing pyoscar
@@ -48,8 +49,7 @@ source bin/activate
 # clone codebase and install
 git clone https://github.com/wmo-cop/pyoscar.git
 cd pyoscar
-python3 setup.py build
-python3 setup.py install
+pip3 install .
 ```
 
 ## Running pyoscar via the Command Line
@@ -152,25 +152,14 @@ response = client.upload(data)
 ### Running Tests
 
 ```bash
-# install dev requirements
-pip3 install -r requirements-dev.txt
-
-# run tests like this:
 cd tests
 python3 run_tests.py
-
-# or like this:
-python3 setup.py test
-
-# measure code coverage
-coverage run --source pyoscar setup.py test
-coverage report -m
 ```
 
 # Releasing
 ```bash
 create release (x.y.z is the release version)
-vi pyoscar/__init__.py  # update __version__
+vi pyproject.toml  # update [project]/version
 git commit -am 'update release version x.y.z'
 git push origin master
 git tag -a x.y.z -m 'tagging release version x.y.z'
@@ -178,13 +167,13 @@ git push --tags
 
 # upload to PyPI
 rm -fr build dist *.egg-info
-python3 setup.py sdist bdist_wheel --universal
+python3 -m build
 twine upload dist/*
 
 # publish release on GitHub (https://github.com/wmo-cop/pyoscar/releases/new)
 
 # bump version back to dev
-vi pyoscar/__init__.py  # update __version__
+vi pyproject.toml  # update [project]/version
 git commit -am 'back to dev'
 git push origin master
 ```

@@ -2,7 +2,7 @@
 #
 # Authors: Tom Kralidis <tomkralidis@gmail.com>
 #
-# Copyright (c) 2025 Tom Kralidis
+# Copyright (c) 2026 Tom Kralidis
 #
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -27,8 +27,6 @@
 #
 # =================================================================
 
-__version__ = '0.10.dev0'
-
 from datetime import date
 import json
 import logging
@@ -41,6 +39,9 @@ import click
 from lxml import etree
 
 from pyoscar import cli_options
+from pyoscar.util import get_package_version
+
+__version__ = get_package_version()
 
 LOGGER = logging.getLogger(__name__)
 
